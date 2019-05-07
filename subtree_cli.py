@@ -6,8 +6,11 @@ Notes:
 - Can only checkout a folder, files aren't supported yet.
 '''
 
+import argparse
 import subtreeutil.utility as sutil
+import sys
 
+from argparse import Namespace
 from pathlib import Path
 
 
@@ -20,16 +23,55 @@ CHECKOUT_DESTINATION =
 CLEANUP = ''
 
 
+class Command:
+    def execute(self, options: Namespace):
+        pass
+
+    @staticmethod
+    def configure(subparser):
+        pass
+
+
+class Test(Command):
+    def execute(self, options):
+        sutil.add_subtree(REMOTE_URL)
+        sutil.fetch_subtree()
+        sutil.checkout_subtree_folder(BRANCH, CHECKOUT_SOURCE)
+        sutil.unstage_all()
+        sutil.remove_subtree()
+        sutil.move_folder(
+            Path(CHECKOUT_SOURCE),
+            Path(CHECKOUT_DESTINATION))
+        sutil.delete_folder(Path(CLEANUP))
+
+    @staticmethod
+    def configure(subparser):
+        pass
+
+
 def main():
-    sutil.add_subtree(REMOTE_URL)
-    sutil.fetch_subtree()
-    sutil.checkout_subtree_folder(BRANCH, CHECKOUT_SOURCE)
-    sutil.unstage_all()
-    sutil.remove_subtree()
-    sutil.move_folder(
-        Path(CHECKOUT_SOURCE),
-        Path(CHECKOUT_DESTINATION))
-    sutil.delete_folder(Path(CLEANUP))
+    options = get_options(sys.argv[1:])
+    command = options.command()
+    command.execute(options)
+
+
+def get_options(argv):
+    parser = argparse.ArgumentParser(
+        prog='subtree_cli',
+        description='Application that automates checking out files and folders from a remote subtree.')
+
+    subparsers = parser.add_subparsers(title='Commands')
+
+    testParser = subparsers.add_parser('test', help='Test command')
+    Test.configure(testParser)
+    testParser.set_defaults(command=Test)
+
+    options = parser.parse_args(argv)
+    if 'command' not in options:
+        parser.print_help()
+        sys.exit(2)
+
+    return options
 
 
 if __name__ == '__main__':
