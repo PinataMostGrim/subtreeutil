@@ -23,8 +23,7 @@ def execute_command(command):
 
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               shell=True)
+                               stderr=subprocess.PIPE)
 
     o, e = process.communicate()
 
