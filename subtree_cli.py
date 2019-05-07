@@ -1,5 +1,5 @@
 '''
-Automates checking out and relocating specific folders from a remote repository.
+Automates checking out and moving folders from a remote repository.
 
 Notes:
 - Uses relative paths. This script is best to be run from the repository's root folder.
