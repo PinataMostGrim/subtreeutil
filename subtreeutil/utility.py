@@ -2,13 +2,22 @@
 
 '''
 
+import json
+import os
 import subprocess
 
 from pathlib import Path
 from shutil import rmtree
 
 
-SUBTREE_NAME = 'subtree'
+_SUBTREE_NAME = 'subtree'
+_DEFAULT_CONFIG = {
+    'remote_url': '',
+    'branch': 'develop',
+    'source_folder': '',
+    'destination_folder': '',
+    'cleanup_folder': ''
+}
 
 
 def execute_command(command):
@@ -32,25 +41,25 @@ def add_subtree(subtree_url):
     command = ['git',
                'remote',
                'add',
-               SUBTREE_NAME,
+               _SUBTREE_NAME,
                subtree_url]
     o, e = execute_command(command)
 
 
 def remove_subtree():
-    command = ['git', 'remote', 'remove', SUBTREE_NAME]
+    command = ['git', 'remote', 'remove', _SUBTREE_NAME]
     o, e = execute_command(command)
 
 
 def fetch_subtree():
-    command = ['git', 'fetch', SUBTREE_NAME]
+    command = ['git', 'fetch', _SUBTREE_NAME]
     o, e = execute_command(command)
 
 
 def checkout_subtree_folder(subtree_branch, folder_path: Path):
     command = ['git',
                'checkout',
-               f'{SUBTREE_NAME}/{subtree_branch}',
+               f'{_SUBTREE_NAME}/{subtree_branch}',
                folder_path]
     o, e = execute_command(command)
 
@@ -87,3 +96,24 @@ def delete_folder(folder: Path):
     print(f'Deleting \'{folder}\'')
 
     rmtree(folder)
+
+
+def edit_config(config: Path):
+    if not config.suffix == '.json':
+        config = config.with_suffix('.json')
+
+    if not config.exists():
+        create_default_config(config)
+
+    try:
+        # Windows
+        os.startfile(str(config))
+    except AttributeError:
+        # OSX / Linux
+        subprocess.Popen(['open', str(config)])
+
+
+def create_default_config(config: Path):
+    with config.open(mode='w') as f:
+        json.dump(_DEFAULT_CONFIG, f, indent=2)
+

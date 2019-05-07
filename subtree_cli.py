@@ -32,6 +32,16 @@ class Command:
         pass
 
 
+class EditConfig(Command):
+    def execute(self, options):
+        config_path = Path(options.config_file)
+        sutil.edit_config(config_path)
+
+    @staticmethod
+    def configure(subparser):
+        subparser.add_argument('config_file', type=str, help='Name of the json configuration file to edit')
+
+
 class Test(Command):
     def execute(self, options):
         sutil.add_subtree(REMOTE_URL)
@@ -61,6 +71,10 @@ def get_options(argv):
         description='Application that automates checking out files and folders from a remote subtree.')
 
     subparsers = parser.add_subparsers(title='Commands')
+
+    edit_config = subparsers.add_parser('config', help='Edit the specified configuration file')
+    EditConfig.configure(edit_config)
+    edit_config.set_defaults(command=EditConfig)
 
     testParser = subparsers.add_parser('test', help='Test command')
     Test.configure(testParser)
