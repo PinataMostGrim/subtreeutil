@@ -1,5 +1,5 @@
 '''
-
+Utility script for automating the checking out of folders from a remote repository.
 '''
 
 import json
@@ -10,8 +10,8 @@ from pathlib import Path
 from shutil import rmtree
 
 
-_SUBTREE_NAME = 'subtree'
 _DEFAULT_CONFIG = {
+    'remote_name': 'subtree',
     'remote_url': '',
     'branch': 'develop',
     'source_folder': '',
@@ -20,39 +20,24 @@ _DEFAULT_CONFIG = {
 }
 
 
-def execute_command(command):
-    print(' '.join(command))
-
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-
-    o, e = process.communicate()
-
-    if o:
-        print(o.decode('ascii'))
-    if e:
-        print(e.decode('ascii'))
-
-    return o, e
-
-
 def perform_checkout(config):
+    remote_name = config['remote_name']
     remote_url = config['remote_url']
     branch = config['branch']
     source_folder = config['source_folder']
     destination_folder = config['destination_folder']
     cleanup_folder = config['cleanup_folder']
 
-    add_subtree(remote_url)
-    fetch_subtree()
+    add_remote(remote_name, remote_url)
+    fetch_remote(remote_name)
 
-    checkout_subtree_folder(
+    checkout_remote_folder(
+        remote_name,
         branch,
         source_folder)
 
     unstage_all()
-    remove_subtree()
+    remove_remote(remote_name)
 
     if destination_folder:
         move_folder(
@@ -65,26 +50,44 @@ def perform_checkout(config):
             delete_folder(cleanup_path)
 
 
-def add_subtree(subtree_url):
+def execute_command(command, log=True):
+    print(' '.join(command))
+
+    process = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+
+    o, e = process.communicate()
+
+    if log:
+        if o:
+            print(o.decode('ascii'))
+        if e:
+            print(e.decode('ascii'))
+
+    return o.decode('ascii'), e.decode('ascii')
+
+
+def add_remote(remote_name, remote_url):
     command = ['git',
                'remote',
                'add',
-               _SUBTREE_NAME,
-               subtree_url]
+               remote_name,
+               remote_url]
     o, e = execute_command(command)
 
 
-def remove_subtree():
-    command = ['git', 'remote', 'remove', _SUBTREE_NAME]
+def remove_remote(remote_name):
+    command = ['git', 'remote', 'remove', remote_name]
     o, e = execute_command(command)
 
 
-def fetch_subtree():
-    command = ['git', 'fetch', _SUBTREE_NAME]
+def fetch_remote(remote_name):
+    command = ['git', 'fetch', remote_name]
     o, e = execute_command(command)
 
 
-def checkout_subtree_folder(subtree_branch, folder_path: Path):
+def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
     command = ['git',
                'checkout',
                f'{_SUBTREE_NAME}/{subtree_branch}',
@@ -98,6 +101,8 @@ def unstage_all():
 
 
 def move_folder(source_folder: Path, destination_folder: Path):
+    print(f'Moving contents of \'{source_folder}\' -> \'{destination_folder}\'')
+
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
@@ -108,11 +113,10 @@ def move_folder(source_folder: Path, destination_folder: Path):
 
         destination_file = destination_folder / source_file.relative_to(source_folder)
 
-        print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
-
         if not destination_file.parent.exists():
             destination_file.parent.mkdir(parents=True)
 
+        # print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
         source_file.replace(destination_file)
 
 
