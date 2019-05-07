@@ -28,8 +28,13 @@ def perform_checkout(config):
     destination_folder = config['destination_folder']
     cleanup_folder = config['cleanup_folder']
 
+    print('')
+
     add_remote(remote_name, remote_url)
     fetch_remote(remote_name)
+
+    commit_hash = get_remote_head_hash(remote_name, branch)
+    print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     checkout_remote_folder(
         remote_name,
@@ -40,6 +45,7 @@ def perform_checkout(config):
     remove_remote(remote_name)
 
     if destination_folder:
+        print(f'Moving contents of \'{source_folder}\' -> \'{destination_folder}\'')
         move_folder(
             Path(source_folder),
             Path(destination_folder))
@@ -47,11 +53,13 @@ def perform_checkout(config):
     if cleanup_folder:
         cleanup_path = Path(cleanup_folder)
         if cleanup_path.exists() and cleanup_path.is_dir():
+            print(f'Deleting \'{cleanup_path}\'')
             delete_folder(cleanup_path)
 
 
 def execute_command(command, log=True):
-    print(' '.join(command))
+    if log:
+        print(' '.join(command))
 
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
@@ -87,10 +95,17 @@ def fetch_remote(remote_name):
     o, e = execute_command(command)
 
 
+def get_remote_head_hash(remote_name, branch):
+    command = [
+        'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
+    o, e = execute_command(command, log=False)
+    return o
+
+
 def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
     command = ['git',
                'checkout',
-               f'{_SUBTREE_NAME}/{subtree_branch}',
+               f'{remote_name}/{remote_branch}',
                folder_path]
     o, e = execute_command(command)
 
@@ -101,8 +116,6 @@ def unstage_all():
 
 
 def move_folder(source_folder: Path, destination_folder: Path):
-    print(f'Moving contents of \'{source_folder}\' -> \'{destination_folder}\'')
-
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
@@ -122,11 +135,7 @@ def move_folder(source_folder: Path, destination_folder: Path):
 
 def delete_folder(folder: Path):
     if not folder.is_dir():
-        print(f'{folder} is not a folder')
         return
-
-    print(f'Deleting \'{folder}\'')
-
     rmtree(folder)
 
 
