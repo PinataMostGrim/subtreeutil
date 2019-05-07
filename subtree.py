@@ -1,6 +1,6 @@
 '''
 
-- Should be run from the repository's root folder
+- Best to be run from the repository's root folder
 - Source must be a directory and cannot be a file
 '''
 
@@ -8,6 +8,7 @@ import subprocess
 
 from pathlib import Path
 from shutil import rmtree
+
 
 FRAMEWORK_NAME = ''
 FRAMEWORK_URL = ''
@@ -19,6 +20,7 @@ CLEANUP = ''
 
 def execute_command(command):
     print(' '.join(command))
+
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
@@ -72,12 +74,14 @@ def move_files():
     for file in source.rglob('*'):
         source_file = Path(file)
 
+        # Skip folders as attempting to replace them seems to result in a
+        # permission denied error.
         if source_file.is_dir():
             continue
 
         destination_file = Path(CHECKOUT_DESTINATION) / source_file.relative_to(CHECKOUT_SOURCE)
 
-        print(f'Moving {source_file} -> {destination_file}')
+        print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
 
         if not destination_file.parent.exists():
             destination_file.parent.mkdir(parents=True)
@@ -86,7 +90,8 @@ def move_files():
 
 
 def cleanup():
-    print(f'Cleaning up {CLEANUP}')
+    print(f'Cleaning up \'{CLEANUP}\'')
+
     source = Path(CLEANUP)
     rmtree(source)
 
