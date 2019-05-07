@@ -1,0 +1,7 @@
+# Python files
+.venv/
+__pycache__
+
+# Sublime Text files
+*.sublime-project
+*.sublime-workspace
