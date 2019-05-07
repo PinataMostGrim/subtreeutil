@@ -163,4 +163,4 @@ def edit_config(config: Path):
 
 def create_default_config(config: Path):
     with config.open(mode='w') as f:
-        json.dump(_DEFAULT_CONFIG, f, indent=2)
+        json.dump(_DEFAULT_CONFIG, f, indent=4)
