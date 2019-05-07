@@ -49,15 +49,6 @@ class EditConfig(Command):
         subparser.add_argument('config_file', type=str, help='Name of the json configuration file to edit')
 
 
-class Test(Command):
-    def execute(self, options):
-        print('This is a test command')
-
-    @staticmethod
-    def configure(subparser):
-        pass
-
-
 def main():
     options = get_options(sys.argv[1:])
     command = options.command()
@@ -78,10 +69,6 @@ def get_options(argv):
     edit_config = subparsers.add_parser('config', help='Edit the specified configuration file')
     EditConfig.configure(edit_config)
     edit_config.set_defaults(command=EditConfig)
-
-    testParser = subparsers.add_parser('test', help='Test command')
-    Test.configure(testParser)
-    testParser.set_defaults(command=Test)
 
     options = parser.parse_args(argv)
     if 'command' not in options:
