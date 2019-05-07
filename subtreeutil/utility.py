@@ -37,6 +37,34 @@ def execute_command(command):
     return o, e
 
 
+def perform_checkout(config):
+    remote_url = config['remote_url']
+    branch = config['branch']
+    source_folder = config['source_folder']
+    destination_folder = config['destination_folder']
+    cleanup_folder = config['cleanup_folder']
+
+    add_subtree(remote_url)
+    fetch_subtree()
+
+    checkout_subtree_folder(
+        branch,
+        source_folder)
+
+    unstage_all()
+    remove_subtree()
+
+    if destination_folder:
+        move_folder(
+            Path(source_folder),
+            Path(destination_folder))
+
+    if cleanup_folder:
+        cleanup_path = Path(cleanup_folder)
+        if cleanup_path.exists() and cleanup_path.is_dir():
+            delete_folder(cleanup_path)
+
+
 def add_subtree(subtree_url):
     command = ['git',
                'remote',
@@ -98,6 +126,13 @@ def delete_folder(folder: Path):
     rmtree(folder)
 
 
+def load_config(config: Path):
+    with config.open('r') as f:
+        data = json.load(f)
+
+    return data
+
+
 def edit_config(config: Path):
     if not config.suffix == '.json':
         config = config.with_suffix('.json')
@@ -116,4 +151,3 @@ def edit_config(config: Path):
 def create_default_config(config: Path):
     with config.open(mode='w') as f:
         json.dump(_DEFAULT_CONFIG, f, indent=2)
-
