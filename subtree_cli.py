@@ -6,7 +6,7 @@ Notes:
 - Can only checkout a folder, files aren't supported yet.
 '''
 
-import subtree.subtree as subtree
+import subtreeutil.utility as sutil
 
 from pathlib import Path
 
@@ -21,15 +21,15 @@ CLEANUP = ''
 
 
 def main():
-    subtree.add_subtree(REMOTE_URL)
-    subtree.fetch_subtree()
-    subtree.checkout_subtree_folder(BRANCH, CHECKOUT_SOURCE)
-    subtree.unstage_all()
-    subtree.remove_subtree()
-    subtree.move_folder(
+    sutil.add_subtree(REMOTE_URL)
+    sutil.fetch_subtree()
+    sutil.checkout_subtree_folder(BRANCH, CHECKOUT_SOURCE)
+    sutil.unstage_all()
+    sutil.remove_subtree()
+    sutil.move_folder(
         Path(CHECKOUT_SOURCE),
         Path(CHECKOUT_DESTINATION))
-    subtree.delete_folder(Path(CLEANUP))
+    sutil.delete_folder(Path(CLEANUP))
 
 
 if __name__ == '__main__':
