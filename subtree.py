@@ -4,7 +4,6 @@
 - Source must be a directory and cannot be a file
 '''
 
-import os
 import subprocess
 
 from pathlib import Path
@@ -33,11 +32,6 @@ def execute_command(command):
         print(e.decode('ascii'))
 
     return o, e
-
-
-def list_remotes():
-    command = ['git', 'remote', '-v']
-    o, e = execute_command(command)
 
 
 def add_framework():
@@ -70,24 +64,6 @@ def checkout_framework():
 def unstage_all():
     command = ['git', 'reset']
     o, e = execute_command(command)
-
-
-def list_files():
-    for dirpath, dirname, filenames in os.walk(CHECKOUT_SOURCE):
-        for filename in filenames:
-            full_path = Path(dirpath) / filename
-            new_path = Path(CHECKOUT_DESTINATION) / full_path
-            print('{} -> {}'.format(full_path, new_path))
-
-
-# def move_files():
-#     source = Path(CHECKOUT_SOURCE)
-#     destination = Path(CHECKOUT_DESTINATION)
-
-#     if not destination.exists():
-#         destination.parent.mkdir(parents=True, exist_ok=True)
-
-#     source.replace(destination)
 
 
 def move_files():
@@ -123,8 +99,6 @@ def main():
     remove_framework()
     move_files()
     cleanup()
-    # list_files()
-    # list_remotes()
 
 
 if __name__ == '__main__':
