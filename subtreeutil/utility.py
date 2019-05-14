@@ -116,21 +116,30 @@ def unstage_all():
 
 
 def move_folder(source_folder: Path, destination_folder: Path):
+    if not source_folder.is_dir():
+        return
+
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
-        # Skip folders as attempting to replace them seems to result in a
+        # Skip moving folders as attempting to replace them seems to result in a
         # permission denied error.
         if source_file.is_dir():
             continue
 
         destination_file = destination_folder / source_file.relative_to(source_folder)
+        move_file(source_file, destination_file)
 
-        if not destination_file.parent.exists():
-            destination_file.parent.mkdir(parents=True)
 
-        # print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
-        source_file.replace(destination_file)
+def move_file(source_file: Path, destination_file: Path):
+    if not source_file.exists():
+        return
+
+    if not destination_file.parent.exists():
+        destination_file.parent.mkdir(parents=True)
+
+    # print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
+    source_file.replace(destination_file)
 
 
 def delete_folder(folder: Path):
