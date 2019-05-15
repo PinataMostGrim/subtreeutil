@@ -16,7 +16,7 @@ _DEFAULT_CONFIG = {
     'branch': 'develop',
     'source_paths': [],
     'destination_paths': [],
-    'cleanup_path': ''
+    'cleanup_paths': []
 }
 
 
@@ -26,7 +26,7 @@ def perform_checkout(config):
     branch = config['branch']
     source_paths = config['source_paths']
     destination_paths = config['destination_paths']
-    cleanup_path = config['cleanup_path']
+    cleanup_paths = config['cleanup_paths']
 
     print('')
 
@@ -51,7 +51,7 @@ def perform_checkout(config):
             Path(source_path),
             Path(destination_path))
 
-    if cleanup_path:
+    for cleanup_path in cleanup_paths:
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
