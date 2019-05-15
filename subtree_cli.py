@@ -34,7 +34,7 @@ class Command:
 
 class Checkout(Command):
     def execute(self, options):
-        config_path = Path(options.config_file)
+        config_path = Path(options.file)
 
         if not config_path.exists():
             print(f'Unable to find configuration file \'{config_path}\'')
@@ -44,17 +44,17 @@ class Checkout(Command):
 
     @staticmethod
     def configure(subparser):
-        subparser.add_argument('config_file', type=str, help='Configuration file to use for checkout operation')
+        subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
 
 
 class EditConfig(Command):
     def execute(self, options):
-        config_path = Path(options.config_file)
-        configuration.edit_config(config_path)
+        config_path = Path(options.file)
+        configuration.edit_config_file(config_path)
 
     @staticmethod
     def configure(subparser):
-        subparser.add_argument('config_file', type=str, help='Name of the json configuration file to edit')
+        subparser.add_argument('file', type=str, help='The configuration file to edit')
 
 
 def main():
@@ -74,9 +74,10 @@ def get_options(argv):
     Checkout.configure(checkout_parser)
     checkout_parser.set_defaults(command=Checkout)
 
-    edit_config = subparsers.add_parser('config', help='Edit the specified configuration file')
-    EditConfig.configure(edit_config)
-    edit_config.set_defaults(command=EditConfig)
+    config_parser = subparsers.add_parser('config', help='Edit the specified configuration file')
+    EditConfig.configure(config_parser)
+    config_parser.set_defaults(command=EditConfig)
+
 
     options = parser.parse_args(argv)
     if 'command' not in options:
