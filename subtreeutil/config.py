@@ -54,10 +54,10 @@ def edit_config_file(config_path: Path):
         create_config_file(config_path)
 
     try:
-        # Open file in Windows
+        # Note: Open file in Windows
         os.startfile(str(config_path))
     except AttributeError:
-        # Open file in OSX / Linux
+        # Note: Open file in OSX / Linux
         subprocess.Popen(['open', str(config_path)])
 
 
@@ -78,7 +78,7 @@ def load_config_file(config_path: Path):
     """Loads a configuration file into the loaded configuration global dictionary.
 
     Raises:
-        FileNotFoundError: An error occured while attempting to load a configuration file.
+        FileNotFoundError: An error occurred while attempting to load a configuration file.
         InvalidConfigurationError: The specified configuration file is not valid.
     """
     global _loaded_config
@@ -97,6 +97,11 @@ def load_config_file(config_path: Path):
 
 
 def validate_configuration(configuration):
+    """Checks the specified configuration dictionary for all required keys and conditions.
+
+    Returns:
+        True if the configuration is valid and False if it is not.
+    """
     default_config = get_default_config()
     is_valid_config = True
 
@@ -149,7 +154,7 @@ def get_remote_name():
 
 
 def get_remote_url():
-    """Fetches remote repository url from the loaded configuration.
+    """Fetches remote repository URL from the loaded configuration.
     """
     config = get_config()
     return config[_REMOTE_URL]
