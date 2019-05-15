@@ -108,6 +108,19 @@ def validate_configuration(configuration):
             print(f'Configuration is missing key \'{key}\'')
             is_valid_config = False
 
+    # Special validation for source / destination path count?
+    try:
+        source_paths = configuration[_SOURCE_PATHS]
+        destination_paths = configuration[_DESTINATION_PATHS]
+
+        if len(source_paths) != len(destination_paths):
+            # TODO: Log event instead of printing it
+            print(f'Configuration does not have the same number of source and destination paths')
+            is_valid_config = False
+    except KeyError:
+        # Note: If we encounter a KeyError here, it will have been caught and logged in the previous try block.
+        pass
+
     return is_valid_config
 
 
