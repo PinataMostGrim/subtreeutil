@@ -1,9 +1,16 @@
 '''
-Automates checking out and moving folders from a remote repository.
+Automates checking out and moving files and folders from a remote repository.
+
+
+Usage:
+- Create and edit a configuration file using the 'config' command
+- Perform a checkout operation using the 'checkout' command and supplying a configuration file
+
 
 Notes:
-- Uses relative paths. This script is best to be run from the repository's root folder.
-- Can only checkout a folder, files aren't supported yet.
+- Uses relative paths. It is best to run this script from the repository's root folder.
+- 'source_paths', 'destination_paths' and 'cleanup_paths' can be files, folders, or a list containing either or both.
+- When defining 'destination_paths', ensure the number of entries matches the number of `source_paths`
 '''
 
 import argparse
