@@ -121,14 +121,14 @@ def move_source(source_path: Path, destination_path: Path):
 
     if source_path.is_dir():
         print(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
-        move_folder(source_path, destination_path)
+        _move_folder(source_path, destination_path)
 
     if source_path.is_file():
         print(f'Moving \'{source_path}\' -> \'{destination_path}\'')
-        move_file(source_path, destination_path)
+        _move_file(source_path, destination_path)
 
 
-def move_folder(source_folder: Path, destination_folder: Path):
+def _move_folder(source_folder: Path, destination_folder: Path):
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
@@ -138,10 +138,10 @@ def move_folder(source_folder: Path, destination_folder: Path):
             continue
 
         destination_file = destination_folder / source_file.relative_to(source_folder)
-        move_file(source_file, destination_file)
+        _move_file(source_file, destination_file)
 
 
-def move_file(source_file: Path, destination_file: Path):
+def _move_file(source_file: Path, destination_file: Path):
     if not destination_file.parent.exists():
         destination_file.parent.mkdir(parents=True)
 
@@ -156,23 +156,24 @@ def delete_source(cleanup_path: Path):
     print(f'Deleting \'{cleanup_path}\'')
 
     if cleanup_path.is_dir():
-        delete_folder(cleanup_path)
+        _delete_folder(cleanup_path)
 
     if cleanup_path.is_file():
-        delete_file(cleanup_path)
+        _delete_file(cleanup_path)
 
 
-def delete_folder(folder_path: Path):
+def _delete_folder(folder_path: Path):
     # TODO: Try except here?
     rmtree(folder_path)
 
 
-def delete_file(file_path: Path):
+def _delete_file(file_path: Path):
     # TODO: Try except here?
     file_path.unlink()
 
 
 def load_config(config: Path):
+    # TODO: Try except here?
     with config.open('r') as f:
         data = json.load(f)
 
