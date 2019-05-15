@@ -51,9 +51,7 @@ def perform_checkout(config):
 
     if cleanup_path:
         cleanup_path = Path(cleanup_path)
-        if cleanup_path.exists() and cleanup_path.is_dir():
-            print(f'Deleting \'{cleanup_path}\'')
-            delete_folder(cleanup_path)
+        delete_source(cleanup_path)
 
 
 def execute_command(command, log=True):
@@ -150,10 +148,28 @@ def move_file(source_file: Path, destination_file: Path):
     source_file.replace(destination_file)
 
 
-def delete_folder(folder: Path):
-    if not folder.is_dir():
+def delete_source(cleanup_path: Path):
+    if not cleanup_path.exists():
+        print(f'{cleanup_path} does not exist')
         return
-    rmtree(folder)
+
+    print(f'Deleting \'{cleanup_path}\'')
+
+    if cleanup_path.is_dir():
+        delete_folder(cleanup_path)
+
+    if cleanup_path.is_file():
+        delete_file(cleanup_path)
+
+
+def delete_folder(folder_path: Path):
+    # TODO: Try except here?
+    rmtree(folder_path)
+
+
+def delete_file(file_path: Path):
+    # TODO: Try except here?
+    file_path.unlink()
 
 
 def load_config(config: Path):
