@@ -14,8 +14,8 @@ _DEFAULT_CONFIG = {
     'remote_name': 'subtree',
     'remote_url': '',
     'branch': 'develop',
-    'source_path': '',
-    'destination_path': '',
+    'source_paths': [],
+    'destination_paths': [],
     'cleanup_path': ''
 }
 
@@ -24,8 +24,8 @@ def perform_checkout(config):
     remote_name = config['remote_name']
     remote_url = config['remote_url']
     branch = config['branch']
-    source_path = config['source_path']
-    destination_path = config['destination_path']
+    source_paths = config['source_paths']
+    destination_paths = config['destination_paths']
     cleanup_path = config['cleanup_path']
 
     print('')
@@ -36,15 +36,17 @@ def perform_checkout(config):
     commit_hash = get_remote_head_hash(remote_name, branch)
     print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
-    checkout_remote_folder(
-        remote_name,
-        branch,
-        source_path)
+    for source_path in source_paths:
+        checkout_remote_folder(
+            remote_name,
+            branch,
+            source_path)
 
     unstage_all()
     remove_remote(remote_name)
 
-    if destination_path:
+    # Note: zip will stop as soon as the shortest list is exhausted.
+    for source_path, destination_path in zip(source_paths, destination_paths):
         move_source(
             Path(source_path),
             Path(destination_path))
