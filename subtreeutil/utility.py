@@ -14,9 +14,9 @@ _DEFAULT_CONFIG = {
     'remote_name': 'subtree',
     'remote_url': '',
     'branch': 'develop',
-    'source_folder': '',
-    'destination_folder': '',
-    'cleanup_folder': ''
+    'source_path': '',
+    'destination_path': '',
+    'cleanup_path': ''
 }
 
 
@@ -24,9 +24,9 @@ def perform_checkout(config):
     remote_name = config['remote_name']
     remote_url = config['remote_url']
     branch = config['branch']
-    source_folder = config['source_folder']
-    destination_folder = config['destination_folder']
-    cleanup_folder = config['cleanup_folder']
+    source_path = config['source_path']
+    destination_path = config['destination_path']
+    cleanup_path = config['cleanup_path']
 
     print('')
 
@@ -39,22 +39,19 @@ def perform_checkout(config):
     checkout_remote_folder(
         remote_name,
         branch,
-        source_folder)
+        source_path)
 
     unstage_all()
     remove_remote(remote_name)
 
-    if destination_folder:
-        print(f'Moving contents of \'{source_folder}\' -> \'{destination_folder}\'')
-        move_folder(
-            Path(source_folder),
-            Path(destination_folder))
+    if destination_path:
+        move_source(
+            Path(source_path),
+            Path(destination_path))
 
-    if cleanup_folder:
-        cleanup_path = Path(cleanup_folder)
-        if cleanup_path.exists() and cleanup_path.is_dir():
-            print(f'Deleting \'{cleanup_path}\'')
-            delete_folder(cleanup_path)
+    if cleanup_path:
+        cleanup_path = Path(cleanup_path)
+        delete_source(cleanup_path)
 
 
 def execute_command(command, log=True):
@@ -67,6 +64,7 @@ def execute_command(command, log=True):
 
     o, e = process.communicate()
 
+    # TODO: Separate function and output using logging
     if log:
         if o:
             print(o.decode('ascii'))
@@ -115,31 +113,67 @@ def unstage_all():
     o, e = execute_command(command)
 
 
-def move_folder(source_folder: Path, destination_folder: Path):
+def move_source(source_path: Path, destination_path: Path):
+    if not source_path.exists():
+        # TODO: Separate function and output using logging
+        print(f'{source_path} does not exist')
+        return
+
+    if source_path.is_dir():
+        print(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
+        _move_folder(source_path, destination_path)
+
+    if source_path.is_file():
+        print(f'Moving \'{source_path}\' -> \'{destination_path}\'')
+        _move_file(source_path, destination_path)
+
+
+def _move_folder(source_folder: Path, destination_folder: Path):
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
-        # Skip folders as attempting to replace them seems to result in a
+        # Skip moving folders as attempting to replace them seems to result in a
         # permission denied error.
         if source_file.is_dir():
             continue
 
         destination_file = destination_folder / source_file.relative_to(source_folder)
-
-        if not destination_file.parent.exists():
-            destination_file.parent.mkdir(parents=True)
-
-        # print(f'Moving \'{source_file}\' -> \'{destination_file}\'')
-        source_file.replace(destination_file)
+        _move_file(source_file, destination_file)
 
 
-def delete_folder(folder: Path):
-    if not folder.is_dir():
+def _move_file(source_file: Path, destination_file: Path):
+    if not destination_file.parent.exists():
+        destination_file.parent.mkdir(parents=True)
+
+    source_file.replace(destination_file)
+
+
+def delete_source(cleanup_path: Path):
+    if not cleanup_path.exists():
+        print(f'{cleanup_path} does not exist')
         return
-    rmtree(folder)
+
+    print(f'Deleting \'{cleanup_path}\'')
+
+    if cleanup_path.is_dir():
+        _delete_folder(cleanup_path)
+
+    if cleanup_path.is_file():
+        _delete_file(cleanup_path)
+
+
+def _delete_folder(folder_path: Path):
+    # TODO: Try except here?
+    rmtree(folder_path)
+
+
+def _delete_file(file_path: Path):
+    # TODO: Try except here?
+    file_path.unlink()
 
 
 def load_config(config: Path):
+    # TODO: Try except here?
     with config.open('r') as f:
         data = json.load(f)
 
