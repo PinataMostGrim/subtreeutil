@@ -2,31 +2,23 @@
 Utility script for automating the checking out of folders from a remote repository.
 '''
 
-import json
-import os
 import subprocess
 
 from pathlib import Path
 from shutil import rmtree
 
-
-_DEFAULT_CONFIG = {
-    'remote_name': 'subtree',
-    'remote_url': '',
-    'branch': 'develop',
-    'source_paths': [],
-    'destination_paths': [],
-    'cleanup_paths': []
-}
+from . import config
 
 
-def perform_checkout(config):
-    remote_name = config['remote_name']
-    remote_url = config['remote_url']
-    branch = config['branch']
-    source_paths = config['source_paths']
-    destination_paths = config['destination_paths']
-    cleanup_paths = config['cleanup_paths']
+def perform_checkout(config_path: Path):
+    config.load_config_file(config_path)
+
+    remote_name = config.get_remote_name()
+    remote_url = config.get_remote_url()
+    branch = config.get_branch()
+    source_paths = config.get_source_paths()
+    destination_paths = config.get_destination_paths()
+    cleanup_paths = config.get_cleanup_paths()
 
     print('')
 
@@ -34,6 +26,7 @@ def perform_checkout(config):
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
+    # TODO: Log instead of print
     print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
@@ -122,10 +115,12 @@ def move_source(source_path: Path, destination_path: Path):
         return
 
     if source_path.is_dir():
+        # TODO: Separate function and output using logging
         print(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
         _move_folder(source_path, destination_path)
 
     if source_path.is_file():
+        # TODO: Separate function and output using logging
         print(f'Moving \'{source_path}\' -> \'{destination_path}\'')
         _move_file(source_path, destination_path)
 
@@ -134,7 +129,7 @@ def _move_folder(source_folder: Path, destination_folder: Path):
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
-        # Skip moving folders as attempting to replace them seems to result in a
+        # Note: Skip moving folders as attempting to replace them seems to result in a
         # permission denied error.
         if source_file.is_dir():
             continue
@@ -172,31 +167,3 @@ def _delete_folder(folder_path: Path):
 def _delete_file(file_path: Path):
     # TODO: Try except here?
     file_path.unlink()
-
-
-def load_config(config: Path):
-    # TODO: Try except here?
-    with config.open('r') as f:
-        data = json.load(f)
-
-    return data
-
-
-def edit_config(config: Path):
-    if not config.suffix == '.json':
-        config = config.with_suffix('.json')
-
-    if not config.exists():
-        create_default_config(config)
-
-    try:
-        # Windows
-        os.startfile(str(config))
-    except AttributeError:
-        # OSX / Linux
-        subprocess.Popen(['open', str(config)])
-
-
-def create_default_config(config: Path):
-    with config.open(mode='w') as f:
-        json.dump(_DEFAULT_CONFIG, f, indent=4)

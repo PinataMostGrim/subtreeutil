@@ -1,9 +1,16 @@
 '''
-Automates checking out and moving folders from a remote repository.
+Automates checking out and moving files and folders from a remote repository.
+
+
+Usage:
+- Create and edit a configuration file using the 'config' command
+- Perform a checkout operation using the 'checkout' command and supplying a configuration file
+
 
 Notes:
-- Uses relative paths. This script is best to be run from the repository's root folder.
-- Can only checkout a folder, files aren't supported yet.
+- Uses relative paths. It is best to run this script from the repository's root folder.
+- 'source_paths', 'destination_paths' and 'cleanup_paths' can be files, folders, or a list containing either or both.
+- When defining 'destination_paths', ensure the number of entries matches the number of `source_paths`
 '''
 
 import argparse
@@ -12,6 +19,8 @@ import sys
 
 from argparse import Namespace
 from pathlib import Path
+
+from subtreeutil import config as configuration
 
 
 class Command:
@@ -25,28 +34,27 @@ class Command:
 
 class Checkout(Command):
     def execute(self, options):
-        config_path = Path(options.config_file)
+        config_path = Path(options.file)
 
         if not config_path.exists():
-            print(f'Unable to find {config_path}')
+            print(f'Unable to find configuration file \'{config_path}\'')
             return
 
-        config = sutil.load_config(config_path)
-        sutil.perform_checkout(config)
+        sutil.perform_checkout(config_path)
 
     @staticmethod
     def configure(subparser):
-        subparser.add_argument('config_file', type=str, help='Configuration file to use for checkout operation')
+        subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
 
 
 class EditConfig(Command):
     def execute(self, options):
-        config_path = Path(options.config_file)
-        sutil.edit_config(config_path)
+        config_path = Path(options.file)
+        configuration.edit_config_file(config_path)
 
     @staticmethod
     def configure(subparser):
-        subparser.add_argument('config_file', type=str, help='Name of the json configuration file to edit')
+        subparser.add_argument('file', type=str, help='The configuration file to edit')
 
 
 def main():
@@ -66,9 +74,10 @@ def get_options(argv):
     Checkout.configure(checkout_parser)
     checkout_parser.set_defaults(command=Checkout)
 
-    edit_config = subparsers.add_parser('config', help='Edit the specified configuration file')
-    EditConfig.configure(edit_config)
-    edit_config.set_defaults(command=EditConfig)
+    config_parser = subparsers.add_parser('config', help='Edit the specified configuration file')
+    EditConfig.configure(config_parser)
+    config_parser.set_defaults(command=EditConfig)
+
 
     options = parser.parse_args(argv)
     if 'command' not in options:
