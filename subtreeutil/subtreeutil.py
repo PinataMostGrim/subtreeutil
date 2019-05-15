@@ -11,7 +11,6 @@ from . import config
 
 
 def perform_checkout(config_path: Path):
-    # Try except here?
     config.load_config_file(config_path)
 
     remote_name = config.get_remote_name()
@@ -27,6 +26,7 @@ def perform_checkout(config_path: Path):
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
+    # TODO: Log instead of print
     print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
@@ -115,10 +115,12 @@ def move_source(source_path: Path, destination_path: Path):
         return
 
     if source_path.is_dir():
+        # TODO: Separate function and output using logging
         print(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
         _move_folder(source_path, destination_path)
 
     if source_path.is_file():
+        # TODO: Separate function and output using logging
         print(f'Moving \'{source_path}\' -> \'{destination_path}\'')
         _move_file(source_path, destination_path)
 
@@ -127,7 +129,7 @@ def _move_folder(source_folder: Path, destination_folder: Path):
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
-        # Skip moving folders as attempting to replace them seems to result in a
+        # Note: Skip moving folders as attempting to replace them seems to result in a
         # permission denied error.
         if source_file.is_dir():
             continue
