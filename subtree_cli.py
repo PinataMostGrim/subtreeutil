@@ -7,7 +7,7 @@ Notes:
 '''
 
 import argparse
-import subtreeutil.utility as sutil
+import subtreeutil.subtreeutil as sutil
 import sys
 
 from argparse import Namespace
