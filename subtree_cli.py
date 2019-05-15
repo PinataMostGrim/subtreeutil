@@ -13,6 +13,8 @@ import sys
 from argparse import Namespace
 from pathlib import Path
 
+from subtreeutil import config as configuration
+
 
 class Command:
     def execute(self, options: Namespace):
@@ -27,11 +29,12 @@ class Checkout(Command):
     def execute(self, options):
         config_path = Path(options.config_file)
 
+        # TODO: Instead of loading the config here, tell the config module to load it
         if not config_path.exists():
             print(f'Unable to find {config_path}')
             return
 
-        config = sutil.load_config(config_path)
+        config = configuration.load_config(config_path)
         sutil.perform_checkout(config)
 
     @staticmethod
@@ -42,7 +45,7 @@ class Checkout(Command):
 class EditConfig(Command):
     def execute(self, options):
         config_path = Path(options.config_file)
-        sutil.edit_config(config_path)
+        configuration.edit_config(config_path)
 
     @staticmethod
     def configure(subparser):
