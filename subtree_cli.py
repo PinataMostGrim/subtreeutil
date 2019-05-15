@@ -1,11 +1,9 @@
 '''
 Automates checking out and moving files and folders from a remote repository.
 
-
 Usage:
 - Create and edit a configuration file using the 'config' command
 - Perform a checkout operation using the 'checkout' command and supplying a configuration file
-
 
 Notes:
 - Uses relative paths. It is best to run this script from the repository's root folder.
@@ -14,11 +12,13 @@ Notes:
 '''
 
 import argparse
-import subtreeutil.subtreeutil as sutil
-import sys
-
 from argparse import Namespace
+
 from pathlib import Path
+
+import sys
+import subtreeutil.subtreeutil as sutil
+
 
 from subtreeutil import config as configuration
 

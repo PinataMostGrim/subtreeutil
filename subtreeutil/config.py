@@ -34,13 +34,11 @@ class ConfigurationError(Exception):
 class InvalidConfigurationError(ConfigurationError):
     """An error occurred while loading a configuration file.
     """
-    pass
 
 
 class EmptyConfigurationError(ConfigurationError):
     """An error occurred because configuration values were accessed before a configuration was loaded.
     """
-    pass
 
 
 def edit_config_file(config_path: Path):
