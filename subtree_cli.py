@@ -29,13 +29,11 @@ class Checkout(Command):
     def execute(self, options):
         config_path = Path(options.config_file)
 
-        # TODO: Instead of loading the config here, tell the config module to load it
         if not config_path.exists():
-            print(f'Unable to find {config_path}')
+            print(f'Unable to find configuration file \'{config_path}\'')
             return
 
-        config = configuration.load_config(config_path)
-        sutil.perform_checkout(config)
+        sutil.perform_checkout(config_path)
 
     @staticmethod
     def configure(subparser):

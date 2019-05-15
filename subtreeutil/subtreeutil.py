@@ -7,15 +7,19 @@ import subprocess
 from pathlib import Path
 from shutil import rmtree
 
+from . import config
 
 
-def perform_checkout(config):
-    remote_name = config['remote_name']
-    remote_url = config['remote_url']
-    branch = config['branch']
-    source_paths = config['source_paths']
-    destination_paths = config['destination_paths']
-    cleanup_paths = config['cleanup_paths']
+def perform_checkout(config_path: Path):
+    # Try except here?
+    config.load_config_file(config_path)
+
+    remote_name = config.get_remote_name()
+    remote_url = config.get_remote_url()
+    branch = config.get_branch()
+    source_paths = config.get_source_paths()
+    destination_paths = config.get_destination_paths()
+    cleanup_paths = config.get_cleanup_paths()
 
     print('')
 
