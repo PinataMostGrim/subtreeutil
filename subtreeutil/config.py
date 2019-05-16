@@ -1,3 +1,5 @@
+"""Loads configuration files, writes configuration files, and fetches loaded configuration values.
+"""
 import json
 import os
 import subprocess
@@ -27,28 +29,28 @@ _loaded_config = None
 
 
 class ConfigurationError(Exception):
-    """Base error for configuration Errors.
-    """
+    """Base error for configuration Errors."""
 
 
 class InvalidConfigurationError(ConfigurationError):
-    """An error occurred while loading a configuration file.
-    """
+    """An error occurred while loading a configuration file."""
 
 
 class EmptyConfigurationError(ConfigurationError):
-    """An error occurred because configuration values were accessed before a configuration was loaded.
-    """
+    """An error occurred because configuration values were accessed before a configuration was loaded."""
 
 
 def edit_config_file(config_path: Path):
     """Opens the specified configuration file with the system's default editor.
+
+    Args:
+      config_path: Path: Path object for the configuration file to edit.
     """
     if not config_path.suffix == '.json':
         config_path = config_path.with_suffix('.json')
 
     if not config_path.exists():
-        # TODO: Log event
+        # TODO: Separate function and output using logging
         create_config_file(config_path)
 
     try:
@@ -61,23 +63,29 @@ def edit_config_file(config_path: Path):
 
 def create_config_file(config_path: Path):
     """Creates a configuration file with default values at the specified path.
+
+    Args:
+      config_path: Path: Path object for the configuration file to create.
     """
     with config_path.open(mode='w') as f:
         json.dump(get_default_config(), f, indent=4)
 
 
 def get_default_config():
-    """Fetches a copy of the default configuration dictionary.
-    """
+    """Fetches a copy of the default configuration dictionary."""
     return _DEFAULT_CONFIG.copy()
 
 
 def load_config_file(config_path: Path):
     """Loads a configuration file into the loaded configuration global dictionary.
 
+    Args:
+      config_path: Path: Path object for the configuration file to load into memory.
+
     Raises:
-        FileNotFoundError: An error occurred while attempting to load a configuration file.
-        InvalidConfigurationError: The specified configuration file is not valid.
+      FileNotFoundError: An error occurred while attempting to load a configuration file.
+      InvalidConfigurationError: The specified configuration file is not valid.
+
     """
     global _loaded_config
 
@@ -85,7 +93,7 @@ def load_config_file(config_path: Path):
         with config_path.open('r') as f:
             configuration = json.load(f)
     except FileNotFoundError:
-        # TODO: Log event
+        # TODO: Separate function and output using logging
         raise FileNotFoundError
 
     if validate_configuration(configuration):
@@ -97,8 +105,12 @@ def load_config_file(config_path: Path):
 def validate_configuration(configuration):
     """Checks the specified configuration dictionary for all required keys and conditions.
 
+    Args:
+      configuration: The configuration dictionary to validate.
+
     Returns:
-        True if the configuration is valid and False if it is not.
+      True if the configuration is valid and False if it is not.
+
     """
     default_config = get_default_config()
     is_valid_config = True
@@ -107,7 +119,7 @@ def validate_configuration(configuration):
         try:
             configuration[key]
         except KeyError:
-            # TODO: Log event instead of printing it
+            # TODO: Separate function and output using logging
             print(f'Configuration is missing key \'{key}\'')
             is_valid_config = False
 
@@ -117,7 +129,7 @@ def validate_configuration(configuration):
         destination_paths = configuration[_DESTINATION_PATHS]
 
         if len(source_paths) != len(destination_paths):
-            # TODO: Log event instead of printing it
+            # TODO: Separate function and output using logging
             print(f'Configuration does not have the same number of source and destination paths')
             is_valid_config = False
     except KeyError:
@@ -128,59 +140,54 @@ def validate_configuration(configuration):
 
 
 def get_config():
-    """Fetches the loaded configuration dictionary.
+    """Fetches the configuration dictionary loaded into memory.
 
     Returns:
-        The global dictionary storing a mapping configuration keys to values.
+      The dictionary storing a mapping configuration keys and values.
 
     Raises:
-        EmptyConfigurationError: A configuration value is accessed without a configuration file being loaded first.
+      EmptyConfigurationError: A configuration value is accessed without a configuration file being loaded first.
+
     """
     global _loaded_config
     if _loaded_config is None:
-        # TODO: Log event
+        # TODO: Separate function and output using logging
         raise EmptyConfigurationError
 
     return _loaded_config
 
 
 def get_remote_name():
-    """Fetches remote repository name from the loaded configuration.
-    """
+    """Fetches remote repository name from the loaded configuration."""
     config = get_config()
     return config[_REMOTE_NAME]
 
 
 def get_remote_url():
-    """Fetches remote repository URL from the loaded configuration.
-    """
+    """Fetches remote repository URL from the loaded configuration."""
     config = get_config()
     return config[_REMOTE_URL]
 
 
 def get_branch():
-    """Fetches remote repository branch name from the loaded configuration.
-    """
+    """Fetches remote repository branch name from the loaded configuration."""
     config = get_config()
     return config[_BRANCH]
 
 
 def get_source_paths():
-    """Fetches source paths from the loaded configuration.
-    """
+    """Fetches source paths from the loaded configuration."""
     config = get_config()
     return config[_SOURCE_PATHS]
 
 
 def get_destination_paths():
-    """Fetches destination paths from the loaded configuration.
-    """
+    """Fetches destination paths from the loaded configuration."""
     config = get_config()
     return config[_DESTINATION_PATHS]
 
 
 def get_cleanup_paths():
-    """Fetches cleanup paths from the loaded configuration.
-    """
+    """Fetches cleanup paths from the loaded configuration."""
     config = get_config()
     return config[_CLEANUP_PATHS]
