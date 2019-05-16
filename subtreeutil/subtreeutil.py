@@ -106,7 +106,7 @@ def add_remote(remote_name, remote_url):
                'add',
                remote_name,
                remote_url]
-    o, e = execute_command(command)
+    execute_command(command)
 
 
 def remove_remote(remote_name):
@@ -116,7 +116,7 @@ def remove_remote(remote_name):
       remote_name: The name of the remote to remove.
     """
     command = ['git', 'remote', 'remove', remote_name]
-    o, e = execute_command(command)
+    execute_command(command)
 
 
 def fetch_remote(remote_name):
@@ -126,7 +126,7 @@ def fetch_remote(remote_name):
       remote_name: The name of the remote to fetch.
     """
     command = ['git', 'fetch', remote_name]
-    o, e = execute_command(command)
+    execute_command(command)
 
 
 def get_remote_head_hash(remote_name, branch):
@@ -156,14 +156,14 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
     command = ['git',
                'checkout',
                f'{remote_name}/{remote_branch}',
-    o, e = execute_command(command)
                source_path]
+    execute_command(command)
 
 
 def unstage_all():
     """Executes a 'git reset' command."""
     command = ['git', 'reset']
-    o, e = execute_command(command)
+    execute_command(command)
 
 
 def move_source(source_path: Path, destination_path: Path):
