@@ -15,6 +15,9 @@ Notes:
 import argparse
 from argparse import Namespace
 
+import logging
+import logging.config
+
 from pathlib import Path
 
 import sys
@@ -52,9 +55,14 @@ class Checkout(Command):
         """
         config_path = Path(args.file)
 
-        if not config_path.exists():
-            print(f'Unable to find configuration file \'{config_path}\'')
-            return
+        cli_log_display.info(f'Performing checkout using configuration \
+            \'{config_path}\'')
+
+        # TODO: Handle this in config.py
+        # if not config_path.exists():
+        #     cli_log_display.error(f'Unable to find configuration file \'{config_path}\'')
+        #     print(f'Unable to find configuration file \'{config_path}\'')
+        #     return
 
         core.perform_checkout(config_path)
 
@@ -71,6 +79,8 @@ class EditConfig(Command):
           args: A Namespace object containing a parsed argument for the configuration file to edit.
         """
         config_path = Path(args.file)
+
+        cli_log_display.info(f'Editing configuration file {config_path}')
         config.edit_config_file(config_path)
 
     @staticmethod
@@ -116,5 +126,66 @@ def get_args(argv):
     return args
 
 
+def configure_log():
+    """Configures subtreeutil's logging. The log file will be created in a log folder as
+    a sibling of this script.
+    """
+    log_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                "style": "{",
+                "format": "{levelname}:{name}:{message}"
+            },
+            "display": {
+                "style": "{",
+                "format": "{message}"
+            },
+            "timestamp": {
+                "style": "{",
+                "format": "[{asctime}][{levelname}] {name}: {message}"
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stderr",
+                "formatter": "display"
+            },
+            "file": {
+                "class": "logging.FileHandler",
+                "filename": "",
+                "formatter": "timestamp"
+            },
+        },
+        "loggers": {
+            "cli.display": {
+                "handlers": ["console", "file"]
+            },
+            "cli.write": {
+                "handlers": ["file"]
+            }
+        },
+        "root": {
+            "level": "INFO"
+        }
+    }
+
+    cli_path = Path(__file__).parent
+    log_path = cli_path / 'logs' / 'subtree_cli.log'
+
+    if not log_path.parent.exists():
+        log_path.parent.mkdir(parents=True)
+
+    log_config['handlers']['file']['filename'] = log_path
+    logging.config.dictConfig(log_config)
+
+
+cli_log_display = logging.getLogger('cli.display')
+cli_log_write = logging.getLogger('cli.write')
+
 if __name__ == '__main__':
+    configure_log()
     main()
+    logging.shutdown()
