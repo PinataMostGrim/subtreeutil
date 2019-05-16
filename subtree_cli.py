@@ -1,15 +1,21 @@
 """
-Command line interface for interacting with the subtree utility module. Automates checking out and moving files and folders from a remote repository.
+Command line interface for interacting with the subtree utility module. Automates
+checking out and moving files and folders from a remote repository.
 
 Usage:
 - Create or edit a configuration file using the 'subtree config' command
-- Perform a checkout operation using the 'subtree checkout' command and supplying a configuration file
+- Perform a checkout operation using the 'subtree checkout' command and supplying a
+configuration file
 - Use the 'subtree -h' command for usage instructions.
 
 Notes:
-- CLI application uses relative paths. It is best to run this script from the repository's root folder.
-- Configuration values for 'source_paths', 'destination_paths' and 'cleanup_paths' can be files, folders, or a list containing a mix of either.
-- When defining 'destination_paths', ensure the number of entries matches the number of `source_paths`
+- A repository must already be present in the current working directory
+- CLI application uses relative paths. It is best to run this script from a
+repository's root folder.
+- Configuration values for 'source_paths', 'destination_paths' and 'cleanup_paths'
+can be files, folders, or a list containing a mix of either.
+- When defining 'destination_paths', ensure the number of entries matches the number
+of `source_paths`
 """
 
 import argparse
@@ -51,7 +57,8 @@ class Checkout(Command):
         """Executes a full checkout command using a configuration file.
 
         Args:
-          args: A Namespace object containing a parsed argument for the configuration file to load.
+          args: A Namespace object containing a parsed argument for the configuration
+          file to load.
         """
         config_path = Path(args.file)
 
@@ -76,7 +83,8 @@ class EditConfig(Command):
         """Executes a configuration file edit command.
 
         Args:
-          args: A Namespace object containing a parsed argument for the configuration file to edit.
+          args: A Namespace object containing a parsed argument for the configuration
+          file to edit.
         """
         config_path = Path(args.file)
 
