@@ -44,7 +44,7 @@ def perform_checkout(config_path: Path):
     print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
-        checkout_remote_folder(
+        checkout_remote_source(
             remote_name,
             branch,
             source_path)
@@ -145,7 +145,7 @@ def get_remote_head_hash(remote_name, branch):
     return o
 
 
-def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
+def checkout_remote_source(remote_name, remote_branch, source_path: Path):
     """Executes a 'git checkout' command to retrieve the source path from a remote.
 
     Args:
@@ -156,8 +156,8 @@ def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
     command = ['git',
                'checkout',
                f'{remote_name}/{remote_branch}',
-               folder_path]
     o, e = execute_command(command)
+               source_path]
 
 
 def unstage_all():
