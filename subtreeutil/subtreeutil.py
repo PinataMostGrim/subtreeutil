@@ -63,7 +63,7 @@ def perform_checkout(config_path: Path):
         delete_source(cleanup_path)
 
 
-def execute_command(command, log=True):
+def execute_command(command: list, log=True):
     """Executes a command process using the subprocesses module.
 
     Used primarily for executing git commands.
