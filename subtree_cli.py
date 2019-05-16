@@ -24,7 +24,7 @@ from subtreeutil import config as configuration
 
 
 class Command:
-    def execute(self, options: Namespace):
+    def execute(self, args: Namespace):
         pass
 
     @staticmethod
@@ -33,8 +33,8 @@ class Command:
 
 
 class Checkout(Command):
-    def execute(self, options):
-        config_path = Path(options.file)
+    def execute(self, args):
+        config_path = Path(args.file)
 
         if not config_path.exists():
             print(f'Unable to find configuration file \'{config_path}\'')
@@ -48,8 +48,8 @@ class Checkout(Command):
 
 
 class EditConfig(Command):
-    def execute(self, options):
-        config_path = Path(options.file)
+    def execute(self, args):
+        config_path = Path(args.file)
         configuration.edit_config_file(config_path)
 
     @staticmethod
@@ -58,12 +58,12 @@ class EditConfig(Command):
 
 
 def main():
-    options = get_options(sys.argv[1:])
-    command = options.command()
-    command.execute(options)
+    args = get_args(sys.argv[1:])
+    command = args.command()
+    command.execute(args)
 
 
-def get_options(argv):
+def get_args(argv):
     parser = argparse.ArgumentParser(
         prog='subtree_cli',
         description='Application that automates checking out files and folders from a remote subtree.')
@@ -79,12 +79,12 @@ def get_options(argv):
     config_parser.set_defaults(command=EditConfig)
 
 
-    options = parser.parse_args(argv)
-    if 'command' not in options:
+    args = parser.parse_args(argv)
+    if 'command' not in args:
         parser.print_help()
         sys.exit(2)
 
-    return options
+    return args
 
 
 if __name__ == '__main__':
