@@ -1,40 +1,58 @@
-'''
-Automates checking out and moving files and folders from a remote repository.
-
+"""
+Command line interface for interacting with the subtree utility module. Automates checking out and moving files and folders from a remote repository.
 
 Usage:
-- Create and edit a configuration file using the 'config' command
-- Perform a checkout operation using the 'checkout' command and supplying a configuration file
-
+- Create or edit a configuration file using the 'subtree config' command
+- Perform a checkout operation using the 'subtree checkout' command and supplying a configuration file
+- Use the 'subtree -h' command for usage instructions.
 
 Notes:
-- Uses relative paths. It is best to run this script from the repository's root folder.
-- 'source_paths', 'destination_paths' and 'cleanup_paths' can be files, folders, or a list containing either or both.
+- CLI application uses relative paths. It is best to run this script from the repository's root folder.
+- Configuration values for 'source_paths', 'destination_paths' and 'cleanup_paths' can be files, folders, or a list containing a mix of either.
 - When defining 'destination_paths', ensure the number of entries matches the number of `source_paths`
-'''
+"""
 
 import argparse
-import subtreeutil.subtreeutil as sutil
-import sys
-
 from argparse import Namespace
+
 from pathlib import Path
+
+import sys
+import subtreeutil.subtreeutil as sutil
+
 
 from subtreeutil import config as configuration
 
 
 class Command:
-    def execute(self, options: Namespace):
+    """Base command class."""
+    def execute(self, args: Namespace):
+        """Executes the command.
+
+        Args:
+          args: Namespace: Namespace object containing arguments for the command.
+        """
         pass
 
     @staticmethod
     def configure(subparser):
+        """Add additional arguments to the command's subparser.
+
+        Args:
+          subparser: A Subparser object to configure.
+        """
         pass
 
 
 class Checkout(Command):
-    def execute(self, options):
-        config_path = Path(options.file)
+    """ """
+    def execute(self, args):
+        """Executes a full checkout command using a configuration file.
+
+        Args:
+          args: A Namespace object containing a parsed argument for the configuration file to load.
+        """
+        config_path = Path(args.file)
 
         if not config_path.exists():
             print(f'Unable to find configuration file \'{config_path}\'')
@@ -44,26 +62,45 @@ class Checkout(Command):
 
     @staticmethod
     def configure(subparser):
+        """ """
         subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
 
 
 class EditConfig(Command):
-    def execute(self, options):
-        config_path = Path(options.file)
+    """ """
+    def execute(self, args):
+        """Executes a configuration file edit command.
+
+        Args:
+          args: A Namespace object containing a parsed argument for the configuration file to edit.
+        """
+        config_path = Path(args.file)
         configuration.edit_config_file(config_path)
 
     @staticmethod
     def configure(subparser):
+        """ """
         subparser.add_argument('file', type=str, help='The configuration file to edit')
 
 
 def main():
-    options = get_options(sys.argv[1:])
-    command = options.command()
-    command.execute(options)
+    """Main execution.
+
+    Gathers system arguments, parses them, and executes the requested command."""
+    args = get_args(sys.argv[1:])
+    command = args.command()
+    command.execute(args)
 
 
-def get_options(argv):
+def get_args(argv):
+    """Builds a Namespace object with parsed arguments.
+
+    Args:
+      argv: A list of arguments to parse.
+
+    Returns:
+        A Namespace object containing parsed arguements.
+    """
     parser = argparse.ArgumentParser(
         prog='subtree_cli',
         description='Application that automates checking out files and folders from a remote subtree.')
@@ -79,12 +116,12 @@ def get_options(argv):
     config_parser.set_defaults(command=EditConfig)
 
 
-    options = parser.parse_args(argv)
-    if 'command' not in options:
+    args = parser.parse_args(argv)
+    if 'command' not in args:
         parser.print_help()
         sys.exit(2)
 
-    return options
+    return args
 
 
 if __name__ == '__main__':
