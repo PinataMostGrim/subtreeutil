@@ -1,4 +1,4 @@
-"""Utility script that automates checking out and moving files and folders from a remote repository.
+"""Utility module that automates checking out and moving files and folders from a remote repository.
 """
 
 import subprocess

@@ -18,10 +18,9 @@ from argparse import Namespace
 from pathlib import Path
 
 import sys
-import subtreeutil.subtreeutil as sutil
 
-
-from subtreeutil import config as configuration
+import subtreeutil.core as core
+import subtreeutil.config as config
 
 
 class Command:
@@ -45,7 +44,6 @@ class Command:
 
 
 class Checkout(Command):
-    """ """
     def execute(self, args):
         """Executes a full checkout command using a configuration file.
 
@@ -58,16 +56,14 @@ class Checkout(Command):
             print(f'Unable to find configuration file \'{config_path}\'')
             return
 
-        sutil.perform_checkout(config_path)
+        core.perform_checkout(config_path)
 
     @staticmethod
     def configure(subparser):
-        """ """
         subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
 
 
 class EditConfig(Command):
-    """ """
     def execute(self, args):
         """Executes a configuration file edit command.
 
@@ -75,18 +71,15 @@ class EditConfig(Command):
           args: A Namespace object containing a parsed argument for the configuration file to edit.
         """
         config_path = Path(args.file)
-        configuration.edit_config_file(config_path)
+        config.edit_config_file(config_path)
 
     @staticmethod
     def configure(subparser):
-        """ """
         subparser.add_argument('file', type=str, help='The configuration file to edit')
 
 
 def main():
-    """Main execution.
-
-    Gathers system arguments, parses them, and executes the requested command."""
+    """Gathers system arguments, parses them, and executes the requested command."""
     args = get_args(sys.argv[1:])
     command = args.command()
     command.execute(args)
@@ -114,7 +107,6 @@ def get_args(argv):
     config_parser = subparsers.add_parser('config', help='Edit the specified configuration file')
     EditConfig.configure(config_parser)
     config_parser.set_defaults(command=EditConfig)
-
 
     args = parser.parse_args(argv)
     if 'command' not in args:
