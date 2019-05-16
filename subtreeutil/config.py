@@ -67,6 +67,10 @@ def create_config_file(config_path: Path):
     Args:
       config_path: Path: Path object for the configuration file to create.
     """
+    # Note: If directory doesn't exist, create it.
+    if not config_path.parent.exists():
+        config_path.parent.mkdir(parents=True)
+
     with config_path.open(mode='w') as f:
         json.dump(get_default_config(), f, indent=4)
 
