@@ -62,16 +62,11 @@ class Checkout(Command):
         """
         config_path = Path(args.file)
 
-        cli_log_display.info(f'Performing checkout using configuration \
-            \'{config_path}\'')
-
-        # TODO: Handle this in config.py
-        # if not config_path.exists():
-        #     cli_log_display.error(f'Unable to find configuration file \'{config_path}\'')
-        #     print(f'Unable to find configuration file \'{config_path}\'')
-        #     return
+        cli_log_display.info(f'Performing checkout using configuration \'{config_path}\'')
+        print('')
 
         core.perform_checkout(config_path)
+        cli_log_display.info('Checkout complete!')
 
     @staticmethod
     def configure(subparser):
@@ -88,7 +83,7 @@ class EditConfig(Command):
         """
         config_path = Path(args.file)
 
-        cli_log_display.info(f'Editing configuration file {config_path}')
+        cli_log_display.info(f'Editing configuration file \'{config_path}\'')
         config.edit_config_file(config_path)
 
     @staticmethod
