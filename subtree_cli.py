@@ -18,7 +18,7 @@ from argparse import Namespace
 from pathlib import Path
 
 import sys
-import subtreeutil.subtreeutil as sutil
+import subtreeutil.core as sutil
 
 
 from subtreeutil import config as configuration
