@@ -1,6 +1,5 @@
-'''
-Utility script for automating the checking out of folders from a remote repository.
-'''
+"""Utility script that automates checking out and moving files and folders from a remote repository.
+"""
 
 import subprocess
 
@@ -11,6 +10,19 @@ from . import config
 
 
 def perform_checkout(config_path: Path):
+    """Performs an entire checkout operation using a configuration file.
+
+    A full checkout operation includes the following steps:
+    - Adds a remote repository
+    - Fetches the remote
+    - Checks out a list of sources (files or folders) from the remote
+    - If destination paths are defined, will move sources to the matching destinations
+    - Performs any configured cleanup (deletion of files or folders)
+    - Removes the remote
+
+    Args:
+      config_path: Path: A Path object for the configuration file to perform the checkout operation with.
+    """
     config.load_config_file(config_path)
 
     remote_name = config.get_remote_name()
@@ -20,13 +32,15 @@ def perform_checkout(config_path: Path):
     destination_paths = config.get_destination_paths()
     cleanup_paths = config.get_cleanup_paths()
 
+    # TODO: Separate function and output using logging, or move this print into CLI script.
     print('')
 
     add_remote(remote_name, remote_url)
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
-    # TODO: Log instead of print
+
+    # TODO: Separate function and output using logging
     print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
@@ -50,6 +64,17 @@ def perform_checkout(config_path: Path):
 
 
 def execute_command(command, log=True):
+    """Executes a command process using the subprocesses module.
+
+    Used primarily for executing git commands.
+
+    Args:
+      command: list: The command to execute.
+      log:  (Default value = True) Logs the command parameter if True.
+
+    Returns:
+        A tuple containing stdout and stderr for the executed command.
+    """
     if log:
         print(' '.join(command))
 
@@ -70,6 +95,12 @@ def execute_command(command, log=True):
 
 
 def add_remote(remote_name, remote_url):
+    """Executes a 'git add remote' command.
+
+    Args:
+      remote_name: The remote repository's name.
+      remote_url: The remote repository's URL.
+    """
     command = ['git',
                'remote',
                'add',
@@ -79,16 +110,35 @@ def add_remote(remote_name, remote_url):
 
 
 def remove_remote(remote_name):
+    """Executes a 'git remove remote' command.
+
+    Args:
+      remote_name: The name of the remote to remove.
+    """
     command = ['git', 'remote', 'remove', remote_name]
     o, e = execute_command(command)
 
 
 def fetch_remote(remote_name):
+    """Executes a 'git fetch' command on a remote.
+
+    Args:
+      remote_name: The name of the remote to fetch.
+    """
     command = ['git', 'fetch', remote_name]
     o, e = execute_command(command)
 
 
 def get_remote_head_hash(remote_name, branch):
+    """Executes a 'git log' command to retrieve a branch's HEAD commit hash.
+
+    Args:
+      remote_name: The remote name to log.
+      branch: The branch name to log.
+
+    Returns:
+        A string containing the commit hash with the format 'remote_name/branch_name (commit_hash)'
+    """
     command = [
         'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
     o, e = execute_command(command, log=False)
@@ -96,6 +146,13 @@ def get_remote_head_hash(remote_name, branch):
 
 
 def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
+    """Executes a 'git checkout' command to retrieve the source path from a remote.
+
+    Args:
+      remote_name:
+      remote_branch:
+      source_path: Path:
+    """
     command = ['git',
                'checkout',
                f'{remote_name}/{remote_branch}',
@@ -104,11 +161,18 @@ def checkout_remote_folder(remote_name, remote_branch, folder_path: Path):
 
 
 def unstage_all():
+    """Executes a 'git reset' command."""
     command = ['git', 'reset']
     o, e = execute_command(command)
 
 
 def move_source(source_path: Path, destination_path: Path):
+    """Moves a source file or folder to a destination.
+
+    Args:
+      source_path: Path: A Path object for the source to move.
+      destination_path: Path: A Path object for the destination to move the source to.
+    """
     if not source_path.exists():
         # TODO: Separate function and output using logging
         print(f'{source_path} does not exist')
@@ -126,6 +190,12 @@ def move_source(source_path: Path, destination_path: Path):
 
 
 def _move_folder(source_folder: Path, destination_folder: Path):
+    """Moves a folder and its contents to a new location.
+
+    Args:
+      source_folder: Path: A Path object for the source folder to move.
+      destination_folder: Path: A Path object for the source folder's destination.
+    """
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
@@ -139,6 +209,12 @@ def _move_folder(source_folder: Path, destination_folder: Path):
 
 
 def _move_file(source_file: Path, destination_file: Path):
+    """Moves a file to a new location.
+
+    Args:
+      source_file: Path: A Path object for the source file to move.
+      destination_file: Path: A Path object for the source file's destination.
+    """
     if not destination_file.parent.exists():
         destination_file.parent.mkdir(parents=True)
 
@@ -146,10 +222,17 @@ def _move_file(source_file: Path, destination_file: Path):
 
 
 def delete_source(cleanup_path: Path):
+    """Deletes a file or folder.
+
+    Args:
+      cleanup_path: Path: A Path object for the file or folder to delete.
+    """
     if not cleanup_path.exists():
+        # TODO: Separate function and output using logging
         print(f'{cleanup_path} does not exist')
         return
 
+    # TODO: Separate function and output using logging
     print(f'Deleting \'{cleanup_path}\'')
 
     if cleanup_path.is_dir():
@@ -160,10 +243,20 @@ def delete_source(cleanup_path: Path):
 
 
 def _delete_folder(folder_path: Path):
-    # TODO: Try except here?
+    """Deletes a folder and all of its contents.
+
+    Args:
+      folder_path: Path: A Path object for the folder to delete.
+    """
+    # TODO: Add try except here
     rmtree(folder_path)
 
 
 def _delete_file(file_path: Path):
-    # TODO: Try except here?
+    """Deletes a file.
+
+    Args:
+      file_path: Path: A Path object for the file to delete.
+    """
+    # TODO: Add try except here
     file_path.unlink()
