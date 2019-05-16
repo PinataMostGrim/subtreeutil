@@ -45,7 +45,6 @@ class Command:
 
 
 class Checkout(Command):
-    """ """
     def execute(self, args):
         """Executes a full checkout command using a configuration file.
 
@@ -62,12 +61,10 @@ class Checkout(Command):
 
     @staticmethod
     def configure(subparser):
-        """ """
         subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
 
 
 class EditConfig(Command):
-    """ """
     def execute(self, args):
         """Executes a configuration file edit command.
 
@@ -79,14 +76,12 @@ class EditConfig(Command):
 
     @staticmethod
     def configure(subparser):
-        """ """
         subparser.add_argument('file', type=str, help='The configuration file to edit')
 
 
-def main():
-    """Main execution.
 
-    Gathers system arguments, parses them, and executes the requested command."""
+def main():
+    """Gathers system arguments, parses them, and executes the requested command."""
     args = get_args(sys.argv[1:])
     command = args.command()
     command.execute(args)
