@@ -173,6 +173,12 @@ def configure_log():
             },
             "cli.write": {
                 "handlers": ["file"]
+            },
+            "subtreeutil.core.display": {
+                "handlers": ["console", "file"]
+            },
+            "subtreeutil.core.write": {
+                "handlers": ["file"]
             }
         },
         "root": {

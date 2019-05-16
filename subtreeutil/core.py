@@ -1,12 +1,17 @@
 """Utility module that automates checking out and moving files and folders from a remote repository.
 """
 
+import logging
 import subprocess
 
 from pathlib import Path
 from shutil import rmtree
 
 from . import config
+
+
+core_log_display = logging.getLogger('subtreeutil.core.display')
+core_log_write = logging.getLogger('subtreeutil.core.write')
 
 
 def perform_checkout(config_path: Path):
@@ -23,6 +28,7 @@ def perform_checkout(config_path: Path):
     Args:
       config_path: Path: A Path object for the configuration file to perform the checkout operation with.
     """
+
     config.load_config_file(config_path)
 
     remote_name = config.get_remote_name()
@@ -32,16 +38,12 @@ def perform_checkout(config_path: Path):
     destination_paths = config.get_destination_paths()
     cleanup_paths = config.get_cleanup_paths()
 
-    # TODO: Separate function and output using logging, or move this print into CLI script.
-    print('')
-
     add_remote(remote_name, remote_url)
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
 
-    # TODO: Separate function and output using logging
-    print(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
+    core_log_display.info(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
         checkout_remote_source(
@@ -63,20 +65,23 @@ def perform_checkout(config_path: Path):
         delete_source(cleanup_path)
 
 
-def execute_command(command: list, log=True):
+def execute_command(command: list, display=True):
     """Executes a command process using the subprocesses module.
 
     Used primarily for executing git commands.
 
     Args:
       command: list: The command to execute.
-      log:  (Default value = True) Logs the command parameter if True.
+      display:  (Default value = True) Displays the command parameter in the console if True.
 
     Returns:
         A tuple containing stdout and stderr for the executed command.
     """
-    if log:
-        print(' '.join(command))
+
+    if display:
+        core_log_display.info(' '.join(command))
+    else:
+        core_log_display.debug(' '.join(command))
 
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
@@ -84,12 +89,13 @@ def execute_command(command: list, log=True):
 
     o, e = process.communicate()
 
-    # TODO: Separate function and output using logging
-    if log:
-        if o:
-            print(o.decode('ascii'))
-        if e:
-            print(e.decode('ascii'))
+    if display and o:
+        core_log_display.info(o.decode('ascii'))
+    else:
+        core_log_display.debug(o.decode('ascii'))
+
+    if e:
+        core_log_display.error(e.decode('ascii'))
 
     return o.decode('ascii'), e.decode('ascii')
 
@@ -101,6 +107,7 @@ def add_remote(remote_name, remote_url):
       remote_name: The remote repository's name.
       remote_url: The remote repository's URL.
     """
+
     command = ['git',
                'remote',
                'add',
@@ -115,6 +122,7 @@ def remove_remote(remote_name):
     Args:
       remote_name: The name of the remote to remove.
     """
+
     command = ['git', 'remote', 'remove', remote_name]
     execute_command(command)
 
@@ -125,6 +133,7 @@ def fetch_remote(remote_name):
     Args:
       remote_name: The name of the remote to fetch.
     """
+
     command = ['git', 'fetch', remote_name]
     execute_command(command)
 
@@ -139,9 +148,10 @@ def get_remote_head_hash(remote_name, branch):
     Returns:
         A string containing the commit hash with the format 'remote_name/branch_name (commit_hash)'
     """
+
     command = [
         'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
-    o, e = execute_command(command, log=False)
+    o, e = execute_command(command, display=False)
     return o
 
 
@@ -153,6 +163,7 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
       remote_branch:
       source_path: Path:
     """
+
     command = ['git',
                'checkout',
                f'{remote_name}/{remote_branch}',
@@ -162,6 +173,7 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
 
 def unstage_all():
     """Executes a 'git reset' command."""
+
     command = ['git', 'reset']
     execute_command(command)
 
@@ -173,19 +185,19 @@ def move_source(source_path: Path, destination_path: Path):
       source_path: Path: A Path object for the source to move.
       destination_path: Path: A Path object for the destination to move the source to.
     """
+
+    # TODO: Test exception handling in _move_folder() and _move_file()
+    # Note: It would be better to allow an exception to occur rather than use a guard here. The problem is that an exception won't be caught by the _move_folder() method.
     if not source_path.exists():
-        # TODO: Separate function and output using logging
-        print(f'{source_path} does not exist')
+        core_log_display.warning(f'{source_path} does not exist')
         return
 
     if source_path.is_dir():
-        # TODO: Separate function and output using logging
-        print(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
+        core_log_display.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
         _move_folder(source_path, destination_path)
 
     if source_path.is_file():
-        # TODO: Separate function and output using logging
-        print(f'Moving \'{source_path}\' -> \'{destination_path}\'')
+        core_log_display.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
         _move_file(source_path, destination_path)
 
 
@@ -196,6 +208,8 @@ def _move_folder(source_folder: Path, destination_folder: Path):
       source_folder: Path: A Path object for the source folder to move.
       destination_folder: Path: A Path object for the source folder's destination.
     """
+
+    # TODO: Test for an exception if the folder doesn't exist
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
@@ -215,6 +229,8 @@ def _move_file(source_file: Path, destination_file: Path):
       source_file: Path: A Path object for the source file to move.
       destination_file: Path: A Path object for the source file's destination.
     """
+
+    # TODO: Use a try / except here
     if not destination_file.parent.exists():
         destination_file.parent.mkdir(parents=True)
 
@@ -227,13 +243,12 @@ def delete_source(cleanup_path: Path):
     Args:
       cleanup_path: Path: A Path object for the file or folder to delete.
     """
-    if not cleanup_path.exists():
-        # TODO: Separate function and output using logging
-        print(f'{cleanup_path} does not exist')
-        return
 
-    # TODO: Separate function and output using logging
-    print(f'Deleting \'{cleanup_path}\'')
+    core_log_display.info(f'Deleting \'{cleanup_path}\'')
+
+    if not cleanup_path.exists():
+        core_log_display.warning(f'{cleanup_path} does not exist')
+        return
 
     if cleanup_path.is_dir():
         _delete_folder(cleanup_path)
@@ -248,6 +263,7 @@ def _delete_folder(folder_path: Path):
     Args:
       folder_path: Path: A Path object for the folder to delete.
     """
+
     # TODO: Add try except here
     rmtree(folder_path)
 
@@ -258,5 +274,6 @@ def _delete_file(file_path: Path):
     Args:
       file_path: Path: A Path object for the file to delete.
     """
+
     # TODO: Add try except here
     file_path.unlink()
