@@ -1,10 +1,11 @@
-"""Executes commands using the subprocess module."""
+"""Executes commands using the subprocess module and handles OS level operations."""
 
 import logging
 import os
 import subprocess
 
 from pathlib import Path
+from shutil import rmtree
 
 
 command_log = logging.getLogger('subtreeutil.command')
@@ -60,3 +61,29 @@ def open_file(file_path: Path):
         # Note: Open file in OSX / Linux
         command = ['open', str(file_path)]
         execute_command(command)
+
+
+def delete_folder(folder_path: Path):
+    """Deletes a folder and all of its contents.
+
+    Args:
+      folder_path: Path: A Path object for the folder to delete.
+    """
+
+    try:
+        rmtree(folder_path)
+    except OSError as exception:
+        command_log.warning(f'Unable to delete \'{folder_path}\', {exception}')
+
+
+def delete_file(file_path: Path):
+    """Deletes a file.
+
+    Args:
+      file_path: Path: A Path object for the file to delete.
+    """
+
+    try:
+        file_path.unlink()
+    except OSError as exception:
+        command_log.warning(f'Unable to delete \'{file_path}\', {exception}')

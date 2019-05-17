@@ -3,10 +3,9 @@
 import logging
 
 from pathlib import Path
-from shutil import rmtree
 
 from . import config
-from . command import execute_command
+from . import command as commandutil
 
 
 core_log = logging.getLogger('subtreeutil.core')
@@ -71,7 +70,7 @@ def add_remote(remote_name, remote_url):
                'add',
                remote_name,
                remote_url]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def remove_remote(remote_name):
@@ -82,7 +81,7 @@ def remove_remote(remote_name):
     """
 
     command = ['git', 'remote', 'remove', remote_name]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def fetch_remote(remote_name):
@@ -93,7 +92,7 @@ def fetch_remote(remote_name):
     """
 
     command = ['git', 'fetch', remote_name]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def get_remote_head_hash(remote_name, branch):
@@ -109,7 +108,7 @@ def get_remote_head_hash(remote_name, branch):
 
     command = [
         'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
-    o, e = execute_command(command, display=False)
+    o, e = commandutil.execute_command(command, display=False)
     return o
 
 
@@ -126,14 +125,14 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
                'checkout',
                f'{remote_name}/{remote_branch}',
                source_path]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def unstage_all():
     """Executes a 'git reset' command."""
 
     command = ['git', 'reset']
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def move_source(source_path: Path, destination_path: Path):
@@ -209,29 +208,15 @@ def delete_source(cleanup_path: Path):
         return
 
     if cleanup_path.is_dir():
-        _delete_folder(cleanup_path)
+        commandutil.delete_folder(cleanup_path)
 
     if cleanup_path.is_file():
-        _delete_file(cleanup_path)
+        commandutil.delete_file(cleanup_path)
 
 
-def _delete_folder(folder_path: Path):
-    """Deletes a folder and all of its contents.
-
-    Args:
-      folder_path: Path: A Path object for the folder to delete.
-    """
-
-    # TODO: Add try except here
-    rmtree(folder_path)
 
 
-def _delete_file(file_path: Path):
-    """Deletes a file.
 
-    Args:
-      file_path: Path: A Path object for the file to delete.
-    """
 
-    # TODO: Add try except here
-    file_path.unlink()
+
+
