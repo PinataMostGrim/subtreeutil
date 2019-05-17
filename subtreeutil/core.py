@@ -2,12 +2,12 @@
 """
 
 import logging
-import subprocess
 
 from pathlib import Path
 from shutil import rmtree
 
 from . import config
+from . command import execute_command
 
 
 core_log = logging.getLogger('subtreeutil.core')
@@ -56,41 +56,6 @@ def perform_checkout(config_path: Path):
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
-
-
-def execute_command(command: list, display=True):
-    """Executes a command process using the subprocesses module.
-
-    Used primarily for executing git commands.
-
-    Args:
-      command: list: The command to execute.
-      display:  (Default value = True) Displays the command parameter in the console if True.
-
-    Returns:
-        A tuple containing stdout and stderr for the executed command.
-    """
-
-    if display:
-        core_log.info(' '.join(command))
-    else:
-        core_log.debug(' '.join(command))
-
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-
-    o, e = process.communicate()
-
-    if display and o:
-        core_log.info(o.decode('ascii'))
-    else:
-        core_log.debug(o.decode('ascii'))
-
-    if e:
-        core_log.error(e.decode('ascii'))
-
-    return o.decode('ascii'), e.decode('ascii')
     core_log.info('Checkout complete!')
 
 
