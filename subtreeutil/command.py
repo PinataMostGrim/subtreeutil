@@ -2,7 +2,10 @@
 """
 
 import logging
+import os
 import subprocess
+
+from pathlib import Path
 
 
 command_log = logging.getLogger('subtreeutil.command')
@@ -41,3 +44,19 @@ def execute_command(command: list, display=True):
         command_log.error(e.decode('ascii'))
 
     return o.decode('ascii'), e.decode('ascii')
+
+
+def open_file(file_path: Path):
+    """Opens a file using the default system application.
+
+    Args:
+      file_path: Path: The file to open.
+    """
+    command_log.info(f'Opening \'{file_path}\'')
+    try:
+        # Note: Open file in Windows
+        os.startfile(str(file_path))
+    except AttributeError:
+        # Note: Open file in OSX / Linux
+        command = ['open', str(file_path)]
+        execute_command(command)
