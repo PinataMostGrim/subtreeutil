@@ -11,7 +11,6 @@ from . import config
 
 
 core_log_display = logging.getLogger('subtreeutil.core.display')
-core_log_write = logging.getLogger('subtreeutil.core.write')
 
 
 def perform_checkout(config_path: Path):

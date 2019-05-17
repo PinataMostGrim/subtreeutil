@@ -31,7 +31,6 @@ _loaded_config = None
 
 
 config_log_display = logging.getLogger('subtreeutil.config.display')
-config_log_write = logging.getLogger('subtreeutil.config.write')
 
 
 class ConfigurationError(Exception):

@@ -162,23 +162,13 @@ def configure_log():
             },
         },
         "loggers": {
-            "cli.display": {
                 "handlers": ["console", "file"]
-            },
-            "cli.write": {
-                "handlers": ["file"]
             },
             "subtreeutil.core.display": {
                 "handlers": ["console", "file"]
             },
-            "subtreeutil.core.write": {
-                "handlers": ["file"]
-            },
             "subtreeutil.config.display": {
                 "handlers": ["console", "file"]
-            },
-            "subtreeutil.config.write": {
-                "handlers": ["file"]
             }
         },
         "root": {
@@ -195,9 +185,6 @@ def configure_log():
     log_config['handlers']['file']['filename'] = log_path
     logging.config.dictConfig(log_config)
 
-
-cli_log_display = logging.getLogger('cli.display')
-cli_log_write = logging.getLogger('cli.write')
 
 if __name__ == '__main__':
     configure_log()
