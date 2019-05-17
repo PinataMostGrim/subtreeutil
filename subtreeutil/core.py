@@ -10,7 +10,7 @@ from shutil import rmtree
 from . import config
 
 
-core_log_display = logging.getLogger('subtreeutil.core.display')
+core_log = logging.getLogger('subtreeutil.core')
 
 
 def perform_checkout(config_path: Path):
@@ -38,7 +38,7 @@ def perform_checkout(config_path: Path):
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
-    core_log_display.info(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
+    core_log.info(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
         checkout_remote_source(remote_name, branch, source_path)
@@ -56,7 +56,7 @@ def perform_checkout(config_path: Path):
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
-    core_log_display.info('Checkout complete!\n')
+    core_log.info('Checkout complete!\n')
 
 
 def execute_command(command: list, display=True):
@@ -73,9 +73,9 @@ def execute_command(command: list, display=True):
     """
 
     if display:
-        core_log_display.info(' '.join(command))
+        core_log.info(' '.join(command))
     else:
-        core_log_display.debug(' '.join(command))
+        core_log.debug(' '.join(command))
 
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
@@ -84,12 +84,12 @@ def execute_command(command: list, display=True):
     o, e = process.communicate()
 
     if display and o:
-        core_log_display.info(o.decode('ascii'))
+        core_log.info(o.decode('ascii'))
     else:
-        core_log_display.debug(o.decode('ascii'))
+        core_log.debug(o.decode('ascii'))
 
     if e:
-        core_log_display.error(e.decode('ascii'))
+        core_log.error(e.decode('ascii'))
 
     return o.decode('ascii'), e.decode('ascii')
 
@@ -183,15 +183,15 @@ def move_source(source_path: Path, destination_path: Path):
     # TODO: Test exception handling in _move_folder() and _move_file()
     # Note: It would be better to allow an exception to occur rather than use a guard here. The problem is that an exception won't be caught by the _move_folder() method.
     if not source_path.exists():
-        core_log_display.warning(f'{source_path} does not exist')
+        core_log.warning(f'{source_path} does not exist')
         return
 
     if source_path.is_dir():
-        core_log_display.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
+        core_log.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
         _move_folder(source_path, destination_path)
 
     if source_path.is_file():
-        core_log_display.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
+        core_log.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
         _move_file(source_path, destination_path)
 
 
@@ -238,10 +238,10 @@ def delete_source(cleanup_path: Path):
       cleanup_path: Path: A Path object for the file or folder to delete.
     """
 
-    core_log_display.info(f'Deleting \'{cleanup_path}\'')
+    core_log.info(f'Deleting \'{cleanup_path}\'')
 
     if not cleanup_path.exists():
-        core_log_display.warning(f'{cleanup_path} does not exist')
+        core_log.warning(f'{cleanup_path} does not exist')
         return
 
     if cleanup_path.is_dir():

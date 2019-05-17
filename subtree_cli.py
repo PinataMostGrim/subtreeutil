@@ -162,12 +162,13 @@ def configure_log():
             },
         },
         "loggers": {
+            "subtreeutil.core": {
                 "handlers": ["console", "file"]
             },
-            "subtreeutil.core.display": {
+            "subtreeutil.config": {
                 "handlers": ["console", "file"]
             },
-            "subtreeutil.config.display": {
+            "subtreeutil.command": {
                 "handlers": ["console", "file"]
             }
         },
