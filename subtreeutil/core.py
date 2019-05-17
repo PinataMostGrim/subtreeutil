@@ -1,4 +1,4 @@
-"""Utility module that automates checking out and moving files and folders from a remote repository.
+"""Automates checking out files and folders from a remote repository.
 """
 
 import logging
@@ -14,7 +14,7 @@ core_log = logging.getLogger('subtreeutil.core')
 
 
 def perform_checkout(config_path: Path):
-    """Performs an entire checkout operation using a configuration file.
+    """Performs the entire checkout operation using a configuration file.
 
     A full checkout operation includes the following steps:
     - Adds a remote repository
@@ -38,7 +38,7 @@ def perform_checkout(config_path: Path):
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
-    core_log.info(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
+    core_log.info(f'Checking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
         checkout_remote_source(remote_name, branch, source_path)
@@ -56,7 +56,6 @@ def perform_checkout(config_path: Path):
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
-    core_log.info('Checkout complete!\n')
 
 
 def execute_command(command: list, display=True):
@@ -92,6 +91,7 @@ def execute_command(command: list, display=True):
         core_log.error(e.decode('ascii'))
 
     return o.decode('ascii'), e.decode('ascii')
+    core_log.info('Checkout complete!')
 
 
 def add_remote(remote_name, remote_url):

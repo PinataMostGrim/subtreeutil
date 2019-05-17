@@ -1,4 +1,4 @@
-"""Loads configuration files, writes configuration files, and fetches loaded configuration values.
+"""Loads configuration files and fetches loaded configuration values.
 """
 
 import json
@@ -8,7 +8,7 @@ import subprocess
 
 from pathlib import Path
 
-# Config variable names
+# Configuration variable names
 _REMOTE_NAME = 'remote_name'
 _REMOTE_URL = 'remote_url'
 _BRANCH = 'branch'
