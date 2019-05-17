@@ -1,14 +1,15 @@
-"""Loads configuration files, writes configuration files, and fetches loaded configuration values.
+"""Loads configuration files and fetches loaded configuration values.
 """
 
 import json
 import logging
-import os
-import subprocess
 
 from pathlib import Path
 
-# Config variable names
+from . command import open_file
+
+
+# Configuration variable names
 _REMOTE_NAME = 'remote_name'
 _REMOTE_URL = 'remote_url'
 _BRANCH = 'branch'
@@ -57,13 +58,7 @@ def edit_config_file(config_path: Path):
     if not config_path.exists():
         create_config_file(config_path)
 
-    config_log.info(f'Opening \'{config_path}\' for editing')
-    try:
-        # Note: Open file in Windows
-        os.startfile(str(config_path))
-    except AttributeError:
-        # Note: Open file in OSX / Linux
-        subprocess.Popen(['open', str(config_path)])
+    open_file(config_path)
 
 
 def create_config_file(config_path: Path):

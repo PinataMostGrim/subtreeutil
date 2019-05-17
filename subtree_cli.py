@@ -1,6 +1,5 @@
 """
-Command line interface for interacting with the subtree utility module. Automates
-checking out and moving files and folders from a remote repository.
+Command line interface for interacting with the subtree utility module. Automates adding a remote repository, checking out files, optionally moving files, and removing the repository.
 
 Usage:
 - Create or edit a configuration file using the 'subtree config' command

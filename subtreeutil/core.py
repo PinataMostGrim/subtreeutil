@@ -1,20 +1,20 @@
-"""Utility module that automates checking out and moving files and folders from a remote repository.
+"""Automates checking out files and folders from a remote repository.
 """
 
 import logging
-import subprocess
 
 from pathlib import Path
 from shutil import rmtree
 
 from . import config
+from . command import execute_command
 
 
 core_log = logging.getLogger('subtreeutil.core')
 
 
 def perform_checkout(config_path: Path):
-    """Performs an entire checkout operation using a configuration file.
+    """Performs the entire checkout operation using a configuration file.
 
     A full checkout operation includes the following steps:
     - Adds a remote repository
@@ -38,7 +38,7 @@ def perform_checkout(config_path: Path):
     fetch_remote(remote_name)
 
     commit_hash = get_remote_head_hash(remote_name, branch)
-    core_log.info(f'\nChecking out files from {remote_name}/{branch} ({commit_hash})\n')
+    core_log.info(f'Checking out files from {remote_name}/{branch} ({commit_hash})\n')
 
     for source_path in source_paths:
         checkout_remote_source(remote_name, branch, source_path)
@@ -56,42 +56,7 @@ def perform_checkout(config_path: Path):
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
-    core_log.info('Checkout complete!\n')
-
-
-def execute_command(command: list, display=True):
-    """Executes a command process using the subprocesses module.
-
-    Used primarily for executing git commands.
-
-    Args:
-      command: list: The command to execute.
-      display:  (Default value = True) Displays the command parameter in the console if True.
-
-    Returns:
-        A tuple containing stdout and stderr for the executed command.
-    """
-
-    if display:
-        core_log.info(' '.join(command))
-    else:
-        core_log.debug(' '.join(command))
-
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-
-    o, e = process.communicate()
-
-    if display and o:
-        core_log.info(o.decode('ascii'))
-    else:
-        core_log.debug(o.decode('ascii'))
-
-    if e:
-        core_log.error(e.decode('ascii'))
-
-    return o.decode('ascii'), e.decode('ascii')
+    core_log.info('Checkout complete!')
 
 
 def add_remote(remote_name, remote_url):
