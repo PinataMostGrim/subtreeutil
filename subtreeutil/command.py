@@ -52,6 +52,7 @@ def open_file(file_path: Path):
     Args:
       file_path: Path: The file to open.
     """
+
     command_log.info(f'Opening \'{file_path}\'')
     try:
         # Note: Open file in Windows

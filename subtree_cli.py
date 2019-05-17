@@ -59,6 +59,7 @@ class Checkout(Command):
           args: A Namespace object containing a parsed argument for the configuration
           file to load.
         """
+
         config_path = Path(args.file)
 
         print('')
@@ -77,6 +78,7 @@ class EditConfig(Command):
           args: A Namespace object containing a parsed argument for the configuration
           file to edit.
         """
+
         config_path = Path(args.file)
 
         print('')
@@ -90,6 +92,7 @@ class EditConfig(Command):
 
 def main():
     """Gathers system arguments, parses them, and executes the requested command."""
+
     args = get_args(sys.argv[1:])
     command = args.command()
     command.execute(args)
@@ -104,6 +107,7 @@ def get_args(argv):
     Returns:
         A Namespace object containing parsed arguements.
     """
+
     parser = argparse.ArgumentParser(
         prog='subtree_cli',
         description='Application that automates checking out files and folders from a remote subtree.')
