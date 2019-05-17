@@ -28,6 +28,8 @@ def perform_checkout(config_path: Path):
 
     config.load_config_file(config_path)
 
+    # TODO: Handle case where an existing repository doesn't exist
+
     remote_name = config.get_remote_name()
     branch = config.get_branch()
     source_paths = config.get_source_paths()
@@ -187,6 +189,7 @@ def _move_file(source_file: Path, destination_file: Path):
       destination_file: Path: A Path object for the source file's destination.
     """
 
+    # TODO: Check to see if the source and destination are the same or if destination is None
     # TODO: Use a try / except here
     if not destination_file.parent.exists():
         destination_file.parent.mkdir(parents=True)
@@ -203,6 +206,7 @@ def delete_source(cleanup_path: Path):
 
     core_log.info(f'Deleting \'{cleanup_path}\'')
 
+    # TODO: Test whether we need this guard if the command.delete methods handle exception catching
     if not cleanup_path.exists():
         core_log.warning(f'{cleanup_path} does not exist')
         return
