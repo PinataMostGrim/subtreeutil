@@ -29,11 +29,11 @@ def execute_command(command: list, display=True):
     else:
         command_log.debug(' '.join(command))
 
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-
-    o, e = process.communicate()
+    with subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE) as process:
+        o, e = process.communicate()
 
     if display and o:
         command_log.info(o.decode('ascii'))
