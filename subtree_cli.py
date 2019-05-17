@@ -1,20 +1,8 @@
-"""
-Command line interface for interacting with the subtree utility module. Automates adding a remote repository, checking out files, optionally moving files, and removing the repository.
+"""Command line interface script for interacting with the subtree utility module.
+Automates checking out files and folders from a remote repository.
 
-Usage:
-- Create or edit a configuration file using the 'subtree config' command
-- Perform a checkout operation using the 'subtree checkout' command and supplying a
-configuration file
-- Use the 'subtree -h' command for usage instructions.
-
-Notes:
-- A repository must already be present in the current working directory
-- CLI application uses relative paths. It is best to run this script from a
-repository's root folder.
-- Configuration values for 'source_paths', 'destination_paths' and 'cleanup_paths'
-can be files, folders, or a list containing a mix of either.
-- When defining 'destination_paths', ensure the number of entries matches the number
-of `source_paths`
+Use the 'subtree -h' command for usage instructions. See 'readme.md' for more
+information.
 """
 
 import argparse
