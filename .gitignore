@@ -5,3 +5,6 @@ __pycache__
 # Sublime Text files
 *.sublime-project
 *.sublime-workspace
+
+# Project files
+logs/*

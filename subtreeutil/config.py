@@ -1,6 +1,8 @@
 """Loads configuration files, writes configuration files, and fetches loaded configuration values.
 """
+
 import json
+import logging
 import os
 import subprocess
 
@@ -28,6 +30,9 @@ _DEFAULT_CONFIG = {
 _loaded_config = None
 
 
+config_log = logging.getLogger('subtreeutil.config')
+
+
 class ConfigurationError(Exception):
     """Base error for configuration Errors."""
 
@@ -50,9 +55,9 @@ def edit_config_file(config_path: Path):
         config_path = config_path.with_suffix('.json')
 
     if not config_path.exists():
-        # TODO: Separate function and output using logging
         create_config_file(config_path)
 
+    config_log.info(f'Opening \'{config_path}\' for editing')
     try:
         # Note: Open file in Windows
         os.startfile(str(config_path))
@@ -69,8 +74,10 @@ def create_config_file(config_path: Path):
     """
     # Note: If directory doesn't exist, create it.
     if not config_path.parent.exists():
+        config_log.debug(f'Creating folder \'{config_path.parent}\'')
         config_path.parent.mkdir(parents=True)
 
+    config_log.info(f'Creating configuration file \'{config_path}\'')
     with config_path.open(mode='w') as f:
         json.dump(get_default_config(), f, indent=4)
 
@@ -93,17 +100,19 @@ def load_config_file(config_path: Path):
     """
     global _loaded_config
 
+    config_log.info(f'Loading configuration file \'{config_path}\'')
     try:
         with config_path.open('r') as f:
             configuration = json.load(f)
-    except FileNotFoundError:
-        # TODO: Separate function and output using logging
-        raise FileNotFoundError
+    except FileNotFoundError as exception:
+        config_log.error(f'Configuration file \'{config_path}\' not found')
+        raise exception
 
     if validate_configuration(configuration):
         _loaded_config = configuration
     else:
-        raise InvalidConfigurationError
+        config_log.error(f'Configuration file \'{config_path}\' is invalid')
+        raise InvalidConfigurationError(f'Configuration file \'{config_path}\' is invalid')
 
 
 def validate_configuration(configuration):
@@ -123,18 +132,16 @@ def validate_configuration(configuration):
         try:
             configuration[key]
         except KeyError:
-            # TODO: Separate function and output using logging
-            print(f'Configuration is missing key \'{key}\'')
+            config_log.error(f'Configuration is missing key \'{key}\'')
             is_valid_config = False
 
-    # Special validation for source / destination path count?
+    # Note: Ensure source and destination paths have the same number of list entries.
     try:
         source_paths = configuration[_SOURCE_PATHS]
         destination_paths = configuration[_DESTINATION_PATHS]
 
-        if len(source_paths) != len(destination_paths):
-            # TODO: Separate function and output using logging
-            print(f'Configuration does not have the same number of source and destination paths')
+        if len(destination_paths) > 0 and len(source_paths) != len(destination_paths):
+            config_log.error(f'Configuration does not have the same number of source and destination paths')
             is_valid_config = False
     except KeyError:
         # Note: If we encounter a KeyError here, it will have been caught and logged in the previous try block.
@@ -155,7 +162,7 @@ def get_config():
     """
     global _loaded_config
     if _loaded_config is None:
-        # TODO: Separate function and output using logging
+        config_log.error(f'Unable to retrieve configuration values: A configuration file has not been loaded')
         raise EmptyConfigurationError
 
     return _loaded_config
