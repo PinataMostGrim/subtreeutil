@@ -1,5 +1,4 @@
-"""Loads configuration files and fetches loaded configuration values.
-"""
+"""Loads configuration files and fetches loaded configuration values."""
 
 import json
 import logging

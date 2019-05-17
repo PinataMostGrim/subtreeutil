@@ -1,5 +1,4 @@
-"""Executes commands using the subprocess module.
-"""
+"""Executes commands using the subprocess module."""
 
 import logging
 import os
