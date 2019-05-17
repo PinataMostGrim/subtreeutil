@@ -57,6 +57,8 @@ def perform_checkout(config_path: Path):
         cleanup_path = Path(cleanup_path)
         delete_source(cleanup_path)
 
+    core_log_display.info('Checkout complete!\n')
+
 
 def execute_command(command: list, display=True):
     """Executes a command process using the subprocesses module.

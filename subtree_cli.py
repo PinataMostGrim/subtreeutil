@@ -62,11 +62,8 @@ class Checkout(Command):
         """
         config_path = Path(args.file)
 
-        cli_log_display.info(f'Performing checkout using configuration \'{config_path}\'')
         print('')
-
         core.perform_checkout(config_path)
-        cli_log_display.info('Checkout complete!')
 
     @staticmethod
     def configure(subparser):
@@ -83,8 +80,9 @@ class EditConfig(Command):
         """
         config_path = Path(args.file)
 
-        cli_log_display.info(f'Editing configuration file \'{config_path}\'')
+        print('')
         config.edit_config_file(config_path)
+        print('')
 
     @staticmethod
     def configure(subparser):
@@ -133,6 +131,7 @@ def configure_log():
     """Configures subtreeutil's logging. The log file will be created in a log folder as
     a sibling of this script.
     """
+
     log_config = {
         "version": 1,
         "disable_existing_loggers": False,
