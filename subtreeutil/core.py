@@ -1,5 +1,4 @@
-"""Automates checking out files and folders from a remote repository.
-"""
+"""Automates checking out files and folders from a remote repository."""
 
 import logging
 
@@ -118,9 +117,9 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
     """Executes a 'git checkout' command to retrieve the source path from a remote.
 
     Args:
-      remote_name:
-      remote_branch:
-      source_path: Path:
+      remote_name: The remote name to check out from.
+      remote_branch: The remote branch to check out from.
+      source_path: Path: A Path object for the file or folder to checkout from the remote branch.
     """
 
     command = ['git',

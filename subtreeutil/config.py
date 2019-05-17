@@ -1,5 +1,4 @@
-"""Loads configuration files and fetches loaded configuration values.
-"""
+"""Loads configuration files and fetches loaded configuration values."""
 
 import json
 import logging
@@ -52,6 +51,7 @@ def edit_config_file(config_path: Path):
     Args:
       config_path: Path: Path object for the configuration file to edit.
     """
+
     if not config_path.suffix == '.json':
         config_path = config_path.with_suffix('.json')
 
@@ -79,6 +79,7 @@ def create_config_file(config_path: Path):
 
 def get_default_config():
     """Fetches a copy of the default configuration dictionary."""
+
     return _DEFAULT_CONFIG.copy()
 
 
@@ -91,8 +92,8 @@ def load_config_file(config_path: Path):
     Raises:
       FileNotFoundError: An error occurred while attempting to load a configuration file.
       InvalidConfigurationError: The specified configuration file is not valid.
-
     """
+
     global _loaded_config
 
     config_log.info(f'Loading configuration file \'{config_path}\'')
@@ -118,8 +119,8 @@ def validate_configuration(configuration):
 
     Returns:
       True if the configuration is valid and False if it is not.
-
     """
+
     default_config = get_default_config()
     is_valid_config = True
 
@@ -153,8 +154,8 @@ def get_config():
 
     Raises:
       EmptyConfigurationError: A configuration value is accessed without a configuration file being loaded first.
-
     """
+
     global _loaded_config
     if _loaded_config is None:
         config_log.error(f'Unable to retrieve configuration values: A configuration file has not been loaded')
@@ -165,35 +166,41 @@ def get_config():
 
 def get_remote_name():
     """Fetches remote repository name from the loaded configuration."""
+
     config = get_config()
     return config[_REMOTE_NAME]
 
 
 def get_remote_url():
     """Fetches remote repository URL from the loaded configuration."""
+
     config = get_config()
     return config[_REMOTE_URL]
 
 
 def get_branch():
     """Fetches remote repository branch name from the loaded configuration."""
+
     config = get_config()
     return config[_BRANCH]
 
 
 def get_source_paths():
     """Fetches source paths from the loaded configuration."""
+
     config = get_config()
     return config[_SOURCE_PATHS]
 
 
 def get_destination_paths():
     """Fetches destination paths from the loaded configuration."""
+
     config = get_config()
     return config[_DESTINATION_PATHS]
 
 
 def get_cleanup_paths():
     """Fetches cleanup paths from the loaded configuration."""
+
     config = get_config()
     return config[_CLEANUP_PATHS]
