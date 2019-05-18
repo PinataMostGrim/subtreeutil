@@ -145,19 +145,18 @@ def move_source(source_path: Path, destination_path: Path):
       destination_path: Path: A Path object for the destination to move the source to.
     """
 
-    # TODO: Test exception handling in _move_folder() and _move_file()
-    # Note: It would be better to allow an exception to occur rather than use a guard here. The problem is that an exception won't be caught by the _move_folder() method.
-    if not source_path.exists():
-        core_log.warning(f'{source_path} does not exist')
-        return
+    try:
+        if source_path.is_dir():
+            core_log.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
+            commandutil.move_folder(source_path, destination_path)
 
-    if source_path.is_dir():
-        core_log.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
-        commandutil.move_folder(source_path, destination_path)
-
-    if source_path.is_file():
-        core_log.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
-        commandutil.move_file(source_path, destination_path)
+        if source_path.is_file():
+            core_log.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
+            commandutil.move_file(source_path, destination_path)
+    except (commandutil.MoveCommandError, commandutil.DeleteCommandError):
+        # Exceptions of these types are already logged in lower level functions.
+        # We simply want to intercept and continue as an error moving isn't the end of the world.
+        pass
 
 
 def delete_source(cleanup_path: Path):

@@ -81,11 +81,17 @@ def move_folder(source_folder: Path, destination_folder: Path):
     Args:
       source_folder: Path: A Path object for the source folder to move.
       destination_folder: Path: A Path object for the source folder's destination.
+
+    Raises:
+      MoveCommandError: An OSError occurred while attempting to move the folder's contents, or the folder does not exist.
     """
 
-    # TODO: Test for an exception if the folder doesn't exist
     if source_folder == destination_folder:
         return
+
+    if not source_folder.exists():
+        command_log.warning(f'Unable to move \'{source_folder}\', folder does not exist')
+        raise MoveCommandError(f'Unable to move \'{source_folder}\', folder does not exist')
 
     for file in source_folder.rglob('*'):
         source_file = Path(file)
