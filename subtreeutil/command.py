@@ -104,6 +104,8 @@ def move_folder(source_folder: Path, destination_folder: Path):
         destination_file = destination_folder / source_file.relative_to(source_folder)
         move_file(source_file, destination_file)
 
+    delete_folder(source_folder)
+
 
 def move_file(source_file: Path, destination_file: Path):
     """Moves a file to a new location.
