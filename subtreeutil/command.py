@@ -71,6 +71,43 @@ def open_file(file_path: Path):
         execute_command(command)
 
 
+def move_folder(source_folder: Path, destination_folder: Path):
+    """Moves a folder and its contents to a new location.
+
+    Args:
+      source_folder: Path: A Path object for the source folder to move.
+      destination_folder: Path: A Path object for the source folder's destination.
+    """
+
+    # TODO: Test for an exception if the folder doesn't exist
+    for file in source_folder.rglob('*'):
+        source_file = Path(file)
+
+        # Note: Skip moving folders as attempting to replace them seems to result in a
+        # permission denied error.
+        if source_file.is_dir():
+            continue
+
+        destination_file = destination_folder / source_file.relative_to(source_folder)
+        move_file(source_file, destination_file)
+
+
+def move_file(source_file: Path, destination_file: Path):
+    """Moves a file to a new location.
+
+    Args:
+      source_file: Path: A Path object for the source file to move.
+      destination_file: Path: A Path object for the source file's destination.
+    """
+
+    # TODO: Check to see if the source and destination are the same or if destination is None
+    # TODO: Use a try / except here
+    if not destination_file.parent.exists():
+        destination_file.parent.mkdir(parents=True)
+
+    source_file.replace(destination_file)
+
+
 def delete_folder(folder_path: Path):
     """Deletes a folder and all of its contents.
 
