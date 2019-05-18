@@ -34,7 +34,7 @@ config_log = logging.getLogger('subtreeutil.config')
 
 
 class ConfigurationError(Exception):
-    """Base error for configuration Errors."""
+    """Base error for configuration module exceptions."""
 
 
 class InvalidConfigurationError(ConfigurationError):
@@ -67,6 +67,8 @@ def create_config_file(config_path: Path):
     Args:
       config_path: Path: Path object for the configuration file to create.
     """
+
+    # TODO: Use a try / except for OSError, and raise ConfigurationError
     # Note: If directory doesn't exist, create it.
     if not config_path.parent.exists():
         config_log.debug(f'Creating folder \'{config_path.parent}\'')

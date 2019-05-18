@@ -3,10 +3,9 @@
 import logging
 
 from pathlib import Path
-from shutil import rmtree
 
 from . import config
-from . command import execute_command
+from . import command as commandutil
 
 
 core_log = logging.getLogger('subtreeutil.core')
@@ -28,6 +27,8 @@ def perform_checkout(config_path: Path):
     """
 
     config.load_config_file(config_path)
+
+    # TODO: Handle case where an existing repository doesn't exist
 
     remote_name = config.get_remote_name()
     branch = config.get_branch()
@@ -71,7 +72,7 @@ def add_remote(remote_name, remote_url):
                'add',
                remote_name,
                remote_url]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def remove_remote(remote_name):
@@ -82,7 +83,7 @@ def remove_remote(remote_name):
     """
 
     command = ['git', 'remote', 'remove', remote_name]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def fetch_remote(remote_name):
@@ -93,7 +94,7 @@ def fetch_remote(remote_name):
     """
 
     command = ['git', 'fetch', remote_name]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def get_remote_head_hash(remote_name, branch):
@@ -109,7 +110,7 @@ def get_remote_head_hash(remote_name, branch):
 
     command = [
         'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
-    o, e = execute_command(command, display=False)
+    o, e = commandutil.execute_command(command, display=False)
     return o
 
 
@@ -126,14 +127,14 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
                'checkout',
                f'{remote_name}/{remote_branch}',
                source_path]
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def unstage_all():
     """Executes a 'git reset' command."""
 
     command = ['git', 'reset']
-    execute_command(command)
+    commandutil.execute_command(command)
 
 
 def move_source(source_path: Path, destination_path: Path):
@@ -144,55 +145,18 @@ def move_source(source_path: Path, destination_path: Path):
       destination_path: Path: A Path object for the destination to move the source to.
     """
 
-    # TODO: Test exception handling in _move_folder() and _move_file()
-    # Note: It would be better to allow an exception to occur rather than use a guard here. The problem is that an exception won't be caught by the _move_folder() method.
-    if not source_path.exists():
-        core_log.warning(f'{source_path} does not exist')
-        return
+    try:
+        if source_path.is_dir():
+            core_log.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
+            commandutil.move_folder(source_path, destination_path)
 
-    if source_path.is_dir():
-        core_log.info(f'Moving contents of \'{source_path}\' -> \'{destination_path}\'')
-        _move_folder(source_path, destination_path)
-
-    if source_path.is_file():
-        core_log.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
-        _move_file(source_path, destination_path)
-
-
-def _move_folder(source_folder: Path, destination_folder: Path):
-    """Moves a folder and its contents to a new location.
-
-    Args:
-      source_folder: Path: A Path object for the source folder to move.
-      destination_folder: Path: A Path object for the source folder's destination.
-    """
-
-    # TODO: Test for an exception if the folder doesn't exist
-    for file in source_folder.rglob('*'):
-        source_file = Path(file)
-
-        # Note: Skip moving folders as attempting to replace them seems to result in a
-        # permission denied error.
-        if source_file.is_dir():
-            continue
-
-        destination_file = destination_folder / source_file.relative_to(source_folder)
-        _move_file(source_file, destination_file)
-
-
-def _move_file(source_file: Path, destination_file: Path):
-    """Moves a file to a new location.
-
-    Args:
-      source_file: Path: A Path object for the source file to move.
-      destination_file: Path: A Path object for the source file's destination.
-    """
-
-    # TODO: Use a try / except here
-    if not destination_file.parent.exists():
-        destination_file.parent.mkdir(parents=True)
-
-    source_file.replace(destination_file)
+        if source_path.is_file():
+            core_log.info(f'Moving \'{source_path}\' -> \'{destination_path}\'')
+            commandutil.move_file(source_path, destination_path)
+    except (commandutil.MoveCommandError, commandutil.DeleteCommandError):
+        # Exceptions of these types are already logged in lower level functions.
+        # We simply want to intercept and continue as an error moving isn't the end of the world.
+        pass
 
 
 def delete_source(cleanup_path: Path):
@@ -204,34 +168,18 @@ def delete_source(cleanup_path: Path):
 
     core_log.info(f'Deleting \'{cleanup_path}\'')
 
+    # TODO: Test whether we need this guard if the command.delete methods handle exception catching
     if not cleanup_path.exists():
         core_log.warning(f'{cleanup_path} does not exist')
         return
 
-    if cleanup_path.is_dir():
-        _delete_folder(cleanup_path)
+    try:
+        if cleanup_path.is_dir():
+            commandutil.delete_folder(cleanup_path)
 
-    if cleanup_path.is_file():
-        _delete_file(cleanup_path)
-
-
-def _delete_folder(folder_path: Path):
-    """Deletes a folder and all of its contents.
-
-    Args:
-      folder_path: Path: A Path object for the folder to delete.
-    """
-
-    # TODO: Add try except here
-    rmtree(folder_path)
-
-
-def _delete_file(file_path: Path):
-    """Deletes a file.
-
-    Args:
-      file_path: Path: A Path object for the file to delete.
-    """
-
-    # TODO: Add try except here
-    file_path.unlink()
+        if cleanup_path.is_file():
+            commandutil.delete_file(cleanup_path)
+    except commandutil.DeleteCommandError:
+        # Note: OSErrors here are not necessarily fatal and application execution
+        # should continue.
+        pass
