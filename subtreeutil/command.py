@@ -84,6 +84,9 @@ def move_folder(source_folder: Path, destination_folder: Path):
     """
 
     # TODO: Test for an exception if the folder doesn't exist
+    if source_folder == destination_folder:
+        return
+
     for file in source_folder.rglob('*'):
         source_file = Path(file)
 
