@@ -102,16 +102,24 @@ def move_file(source_file: Path, destination_file: Path):
     Args:
       source_file: Path: A Path object for the source file to move.
       destination_file: Path: A Path object for the source file's destination.
+
+    Raises:
+      MoveCommandError: An OSError occurred while attempting to move a file, or the file does not exist.
     """
 
     if source_file == destination_file:
         return
+
+    if not source_file.exists():
+        command_log.warning(f'Unable to move \'{source_file}\', file does not exist')
+        raise MoveCommandError(f'Unable to move \'{source_file}\', file does not exist')
 
     try:
         if not destination_file.parent.exists():
             destination_file.parent.mkdir(parents=True)
 
         source_file.replace(destination_file)
+
     except OSError as exception:
         command_log.warning(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
         raise MoveCommandError(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
