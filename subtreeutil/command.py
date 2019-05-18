@@ -11,6 +11,14 @@ from shutil import rmtree
 command_log = logging.getLogger('subtreeutil.command')
 
 
+class CommandError(Exception):
+    """Base error for command module exceptions."""
+
+
+class DeleteCommandError(CommandError):
+    """An error occured while attempting to delete a file or folder."""
+
+
 def execute_command(command: list, display=True):
     """Executes a command process using the subprocesses module.
 
@@ -68,12 +76,16 @@ def delete_folder(folder_path: Path):
 
     Args:
       folder_path: Path: A Path object for the folder to delete.
+
+    Raises:
+      DeleteCommandError: An OSError occured while attempting to delete a folder.
     """
 
     try:
         rmtree(folder_path)
     except OSError as exception:
         command_log.warning(f'Unable to delete \'{folder_path}\', {exception}')
+        raise DeleteCommandError(f'Unable to delete \'{folder_path}\', {exception}')
 
 
 def delete_file(file_path: Path):
@@ -81,9 +93,13 @@ def delete_file(file_path: Path):
 
     Args:
       file_path: Path: A Path object for the file to delete.
+
+    Raises:
+      DeleteCommandError: An OSError occured while attempting to delete a file.
     """
 
     try:
         file_path.unlink()
     except OSError as exception:
         command_log.warning(f'Unable to delete \'{file_path}\', {exception}')
+        raise DeleteCommandError(f'Unable to delete \'{file_path}\', {exception}')

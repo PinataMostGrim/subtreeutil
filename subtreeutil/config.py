@@ -34,7 +34,7 @@ config_log = logging.getLogger('subtreeutil.config')
 
 
 class ConfigurationError(Exception):
-    """Base error for configuration Errors."""
+    """Base error for configuration module exceptions."""
 
 
 class InvalidConfigurationError(ConfigurationError):

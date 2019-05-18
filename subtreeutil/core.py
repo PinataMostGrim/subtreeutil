@@ -207,16 +207,13 @@ def delete_source(cleanup_path: Path):
         core_log.warning(f'{cleanup_path} does not exist')
         return
 
-    if cleanup_path.is_dir():
-        commandutil.delete_folder(cleanup_path)
+    try:
+        if cleanup_path.is_dir():
+            commandutil.delete_folder(cleanup_path)
 
-    if cleanup_path.is_file():
-        commandutil.delete_file(cleanup_path)
-
-
-
-
-
-
-
-
+        if cleanup_path.is_file():
+            commandutil.delete_file(cleanup_path)
+    except commandutil.DeleteCommandError:
+        # Note: OSErrors here are not necessarily fatal and application execution
+        # should continue.
+        pass
