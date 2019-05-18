@@ -15,6 +15,10 @@ class CommandError(Exception):
     """Base error for command module exceptions."""
 
 
+class MoveCommandError(CommandError):
+    """An error occured while attempting to move a file or folder."""
+
+
 class DeleteCommandError(CommandError):
     """An error occured while attempting to delete a file or folder."""
 
@@ -100,12 +104,17 @@ def move_file(source_file: Path, destination_file: Path):
       destination_file: Path: A Path object for the source file's destination.
     """
 
-    # TODO: Check to see if the source and destination are the same or if destination is None
-    # TODO: Use a try / except here
-    if not destination_file.parent.exists():
-        destination_file.parent.mkdir(parents=True)
+    if source_file == destination_file:
+        return
 
-    source_file.replace(destination_file)
+    try:
+        if not destination_file.parent.exists():
+            destination_file.parent.mkdir(parents=True)
+
+        source_file.replace(destination_file)
+    except OSError as exception:
+        command_log.warning(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
+        raise MoveCommandError(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
 
 
 def delete_folder(folder_path: Path):
