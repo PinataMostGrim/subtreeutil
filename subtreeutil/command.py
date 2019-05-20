@@ -41,10 +41,7 @@ def execute_command(command: list, display=True):
     else:
         command_log.debug(' '.join(command))
 
-    with subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE) as process:
+    with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
         o, e = process.communicate()
 
     if display and o:
@@ -83,7 +80,8 @@ def move_folder(source_folder: Path, destination_folder: Path):
       destination_folder: Path: A Path object for the source folder's destination.
 
     Raises:
-      MoveCommandError: An OSError occurred while attempting to move the folder's contents, or the folder does not exist.
+      MoveCommandError: An OSError occurred while attempting to move the folder's
+        contents, or the folder does not exist.
     """
 
     if source_folder == destination_folder:
@@ -115,7 +113,8 @@ def move_file(source_file: Path, destination_file: Path):
       destination_file: Path: A Path object for the source file's destination.
 
     Raises:
-      MoveCommandError: An OSError occurred while attempting to move a file, or the file does not exist.
+      MoveCommandError: An OSError occurred while attempting to move a file, or the file
+        does not exist.
     """
 
     if source_file == destination_file:
@@ -132,8 +131,12 @@ def move_file(source_file: Path, destination_file: Path):
         source_file.replace(destination_file)
 
     except OSError as exception:
-        command_log.warning(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
-        raise MoveCommandError(f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}')
+        command_log.warning(
+            f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}'
+        )
+        raise MoveCommandError(
+            f'Unable to move \'{source_file}\' to \'{destination_file}\', {exception}'
+        )
 
 
 def delete_folder(folder_path: Path):

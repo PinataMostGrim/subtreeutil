@@ -1,3 +1,4 @@
+
 """Command line interface script for interacting with the subtree utility module.
 Automates checking out files and folders from a remote repository.
 
@@ -21,6 +22,7 @@ import subtreeutil.config as config
 
 class Command:
     """Base command class."""
+
     def execute(self, args: Namespace):
         """Executes the command.
 
@@ -55,7 +57,9 @@ class Checkout(Command):
 
     @staticmethod
     def configure(subparser):
-        subparser.add_argument('file', type=str, help='Configuration file to use for checkout operation')
+        subparser.add_argument(
+            'file', type=str, help='Configuration file to use for checkout operation'
+        )
 
 
 class EditConfig(Command):
@@ -98,11 +102,14 @@ def get_args(argv):
 
     parser = argparse.ArgumentParser(
         prog='subtree_cli',
-        description='Application that automates checking out files and folders from a remote subtree.')
+        description='Application that automates checking out files and folders from a remote subtree.',
+    )
 
     subparsers = parser.add_subparsers(title='Commands')
 
-    checkout_parser = subparsers.add_parser('checkout', help='Perform a checkout operation using the specified configuration file')
+    checkout_parser = subparsers.add_parser(
+        'checkout', help='Perform a checkout operation using the specified configuration file'
+    )
     Checkout.configure(checkout_parser)
     checkout_parser.set_defaults(command=Checkout)
 
@@ -127,45 +134,24 @@ def configure_log():
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "default": {
-                "style": "{",
-                "format": "{levelname}:{name}:{message}"
-            },
-            "display": {
-                "style": "{",
-                "format": "{message}"
-            },
-            "timestamp": {
-                "style": "{",
-                "format": "[{asctime}][{levelname}] {name}: {message}"
-            }
+            "default": {"style": "{", "format": "{levelname}:{name}:{message}"},
+            "display": {"style": "{", "format": "{message}"},
+            "timestamp": {"style": "{", "format": "[{asctime}][{levelname}] {name}: {message}"},
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
                 "stream": "ext://sys.stderr",
-                "formatter": "display"
+                "formatter": "display",
             },
-            "file": {
-                "class": "logging.FileHandler",
-                "filename": "",
-                "formatter": "timestamp"
-            },
+            "file": {"class": "logging.FileHandler", "filename": "", "formatter": "timestamp"},
         },
         "loggers": {
-            "subtreeutil.core": {
-                "handlers": ["console", "file"]
-            },
-            "subtreeutil.config": {
-                "handlers": ["console", "file"]
-            },
-            "subtreeutil.command": {
-                "handlers": ["console", "file"]
-            }
+            "subtreeutil.core": {"handlers": ["console", "file"]},
+            "subtreeutil.config": {"handlers": ["console", "file"]},
+            "subtreeutil.command": {"handlers": ["console", "file"]},
         },
-        "root": {
-            "level": "INFO"
-        }
+        "root": {"level": "INFO"},
     }
 
     cli_path = Path(__file__).parent

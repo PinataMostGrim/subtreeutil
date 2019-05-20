@@ -5,7 +5,7 @@ import logging
 
 from pathlib import Path
 
-from . command import open_file
+from .command import open_file
 
 
 # Configuration variable names
@@ -23,7 +23,7 @@ _DEFAULT_CONFIG = {
     _BRANCH: 'develop',
     _SOURCE_PATHS: [],
     _DESTINATION_PATHS: [],
-    _CLEANUP_PATHS: []
+    _CLEANUP_PATHS: [],
 }
 
 
@@ -42,7 +42,8 @@ class InvalidConfigurationError(ConfigurationError):
 
 
 class EmptyConfigurationError(ConfigurationError):
-    """An error occurred because configuration values were accessed before a configuration was loaded."""
+    """An error occurred because configuration values were accessed before a
+    configuration was loaded."""
 
 
 def edit_config_file(config_path: Path):
@@ -139,10 +140,13 @@ def validate_configuration(configuration):
         destination_paths = configuration[_DESTINATION_PATHS]
 
         if len(destination_paths) > 0 and len(source_paths) != len(destination_paths):
-            config_log.error(f'Configuration does not have the same number of source and destination paths')
+            config_log.error(
+                f'Configuration does not have the same number of source and destination paths'
+            )
             is_valid_config = False
     except KeyError:
-        # Note: If we encounter a KeyError here, it will have been caught and logged in the previous try block.
+        # Note: If we encounter a KeyError here, it will have been caught and logged in
+        # the previous try block.
         pass
 
     return is_valid_config
@@ -155,12 +159,15 @@ def get_config():
       The dictionary storing a mapping configuration keys and values.
 
     Raises:
-      EmptyConfigurationError: A configuration value is accessed without a configuration file being loaded first.
+      EmptyConfigurationError: A configuration value is accessed without a configuration
+        file being loaded first.
     """
 
     global _loaded_config
     if _loaded_config is None:
-        config_log.error(f'Unable to retrieve configuration values: A configuration file has not been loaded')
+        config_log.error(
+            f'Unable to retrieve configuration values: A configuration file has not been loaded'
+        )
         raise EmptyConfigurationError
 
     return _loaded_config
