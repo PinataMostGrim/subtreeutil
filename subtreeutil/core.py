@@ -23,7 +23,8 @@ def perform_checkout(config_path: Path):
     - Removes the remote
 
     Args:
-      config_path: Path: A Path object for the configuration file to perform the checkout operation with.
+      config_path: Path: A Path object for the configuration file to perform the
+      checkout operation with.
     """
 
     config.load_config_file(config_path)
@@ -47,9 +48,7 @@ def perform_checkout(config_path: Path):
     remove_remote(remote_name)
 
     # Note: zip() will stop as soon as the shortest list is exhausted.
-    for source_path, destination_path in zip(
-            source_paths,
-            config.get_destination_paths()):
+    for source_path, destination_path in zip(source_paths, config.get_destination_paths()):
         move_source(Path(source_path), Path(destination_path))
 
     for cleanup_path in config.get_cleanup_paths():
@@ -67,11 +66,7 @@ def add_remote(remote_name, remote_url):
       remote_url: The remote repository's URL.
     """
 
-    command = ['git',
-               'remote',
-               'add',
-               remote_name,
-               remote_url]
+    command = ['git', 'remote', 'add', remote_name, remote_url]
     commandutil.execute_command(command)
 
 
@@ -108,8 +103,7 @@ def get_remote_head_hash(remote_name, branch):
         A string containing the commit hash with the format 'remote_name/branch_name (commit_hash)'
     """
 
-    command = [
-        'git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
+    command = ['git', 'log', '-n', '1', f'{remote_name}/{branch}', '--pretty=format:%H']
     o, e = commandutil.execute_command(command, display=False)
     return o
 
@@ -123,10 +117,7 @@ def checkout_remote_source(remote_name, remote_branch, source_path: Path):
       source_path: Path: A Path object for the file or folder to checkout from the remote branch.
     """
 
-    command = ['git',
-               'checkout',
-               f'{remote_name}/{remote_branch}',
-               source_path]
+    command = ['git', 'checkout', f'{remote_name}/{remote_branch}', source_path]
     commandutil.execute_command(command)
 
 

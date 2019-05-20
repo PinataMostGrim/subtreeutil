@@ -257,7 +257,8 @@ def test_move_file_missing():
 
 
 def test_move_file_same_arguments(fixture_file):
-    """Tests that giving identical arguments to move_file() leaves the file intact at the source location."""
+    """Tests that giving identical arguments to move_file() leaves the file intact at
+    the source location."""
     source = get_test_file_path()
     command.move_file(source, source)
     assert source.exists() is True
