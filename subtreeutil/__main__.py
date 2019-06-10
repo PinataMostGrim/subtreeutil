@@ -1,4 +1,3 @@
-
 """Command line interface script for interacting with the subtree utility module.
 Automates checking out files and folders from a remote repository.
 
@@ -16,8 +15,8 @@ from pathlib import Path
 
 import sys
 
-import subtreeutil.core as core
-import subtreeutil.config as config
+from . import core as core
+from . import config as config
 
 
 class Command:
