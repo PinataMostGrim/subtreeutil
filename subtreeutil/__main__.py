@@ -153,8 +153,8 @@ def configure_log():
         "root": {"level": "INFO"},
     }
 
-    cli_path = Path(__file__).parent
-    log_path = cli_path / 'logs' / 'subtree_cli.log'
+    path = Path(__file__).parent
+    log_path = path / 'logs' / 'subtreeutil.log'
 
     if not log_path.parent.exists():
         log_path.parent.mkdir(parents=True)

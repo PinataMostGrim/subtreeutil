@@ -7,4 +7,4 @@ __pycache__
 *.sublime-workspace
 
 # Project files
-logs/*
+subtreeutil/logs/*
