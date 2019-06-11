@@ -1,4 +1,3 @@
-
 """Command line interface script for interacting with the subtree utility module.
 Automates checking out files and folders from a remote repository.
 
@@ -16,8 +15,8 @@ from pathlib import Path
 
 import sys
 
-import subtreeutil.core as core
-import subtreeutil.config as config
+from . import core as core
+from . import config as config
 
 
 class Command:
@@ -154,8 +153,8 @@ def configure_log():
         "root": {"level": "INFO"},
     }
 
-    cli_path = Path(__file__).parent
-    log_path = cli_path / 'logs' / 'subtree_cli.log'
+    path = Path(__file__).parent
+    log_path = path / 'logs' / 'subtreeutil.log'
 
     if not log_path.parent.exists():
         log_path.parent.mkdir(parents=True)
