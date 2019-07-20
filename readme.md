@@ -10,7 +10,7 @@ Performs a checkout operation from a remote repository with the following steps:
 
 ## Usage
 ```
-usage: subtree_cli [-h] {checkout,config} ...
+usage: subtreeutil [-h] {checkout,config} ...
 
 Application that automates checking out files and folders from a remote git
 repository.
