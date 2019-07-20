@@ -35,13 +35,13 @@ A template configuration file can be viewed at `config\template.json` or use the
     - The URL of the remote to add
     - *Default:* ***""***
 - **branch**
-    - The branch to checkout sources from
+    - The branch to checkout files or folders from
     - *Default:* ***"develop"***
 - **source_paths**
     - A list of files or folders to checkout from the remote repository
     - *Default:* ***"[]"***
 - **destination_paths**
-    - A list of locations to move the checked out sources into. If any `destination_paths` are defined at all, the number of entries must match the number of entries in `source_paths`.
+    - A list of locations to move the checked out files or folders into. If any `destination_paths` are defined at all, the number of entries must match the number of entries in `source_paths`.
     - *Default:* ***"[]"***
 - **cleanup_paths**
     - A list of files or folders to delete after the checkout and move steps have been performed.
