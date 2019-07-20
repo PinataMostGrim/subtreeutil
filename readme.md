@@ -1,9 +1,7 @@
 # subtreeutil
+Automates checking out files and folders from a remote git repository where a submodule or subtree is not convenient to use.
 
-Automates checking out files and folders from a remote repository.
-
-## Features
-
+Performs a checkout operation from a remote repository with the following steps:
 - Adds a remote repository to an existing local one
 - Checks out a list of files and folders from a branch
 - (Optionally) Moves files and folders to a new location
@@ -11,15 +9,24 @@ Automates checking out files and folders from a remote repository.
 - Removes the temporary remote
 
 ## Usage
-- **Create or edit a configuration file**
-    Use the `subtree config` command and supply a configuration filename to edit
-- **Perform an automated checkout operation**
-    Use the `subtree checkout` command and supply a configuratione filename to consume
-- **View usage options**
-    Use the `subtree -h` command
+```
+usage: subtree_cli [-h] {checkout,config} ...
+
+Application that automates checking out files and folders from a remote git
+repository.
+
+optional arguments:
+  -h, --help         show this help message and exit
+
+Commands:
+  {checkout,config}
+    checkout         Perform a checkout operation using the specified
+                     configuration file
+    config           Create or edit a checkout operation configuration file
+```
 
 ## Configuration Settings
-A template configuration file can be viewed at `config\template.json` or use the `subtree config` command to generate a default configuration.
+A template configuration file can be viewed at `config\template.json` or use the `subtreeutil config` command to generate a default configuration.
 
 - **remote_name**
     - The name to give the remote we are adding
@@ -43,12 +50,12 @@ A template configuration file can be viewed at `config\template.json` or use the
 ## Examples
 ##### Edit a configuration file
 ```
-subtree config config\template.json
+subtreeutil config config\template.json
 ```
 
 ##### Perform an automated checkout using a configuration file
 ```
-subtree checkout config\template.json
+subtreeutil checkout config\template.json
 ```
 
 ##### Example configuration file
@@ -65,6 +72,5 @@ subtree checkout config\template.json
 
 ## Notes
 - A local repository must be present in the current working directory.
-- Subtree uses relative paths. It is best to execute the CLI script from the local repository's root folder.
-- Configuration files are formatted using json
+- `subtreeutil` uses relative paths. It is best to execute the CLI script from the local repository's root folder.
 - A log file is created at `logs\subtree_cli.log`

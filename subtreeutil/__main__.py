@@ -1,6 +1,4 @@
-
-"""Command line interface script for interacting with the subtree utility module.
-Automates checking out files and folders from a remote repository.
+"""Automates checking out files and folders from a remote git repository.
 
 Use the 'subtree -h' command for usage instructions. See 'readme.md' for more
 information.
@@ -16,8 +14,8 @@ from pathlib import Path
 
 import sys
 
-import subtreeutil.core as core
-import subtreeutil.config as config
+from . import core as core
+from . import config as config
 
 
 class Command:
@@ -102,7 +100,7 @@ def get_args(argv):
 
     parser = argparse.ArgumentParser(
         prog='subtree_cli',
-        description='Application that automates checking out files and folders from a remote subtree.',
+        description='Application that automates checking out files and folders from a remote git repository.',
     )
 
     subparsers = parser.add_subparsers(title='Commands')
@@ -113,7 +111,7 @@ def get_args(argv):
     Checkout.configure(checkout_parser)
     checkout_parser.set_defaults(command=Checkout)
 
-    config_parser = subparsers.add_parser('config', help='Edit the specified configuration file')
+    config_parser = subparsers.add_parser('config', help='Create or edit a checkout operation configuration file')
     EditConfig.configure(config_parser)
     config_parser.set_defaults(command=EditConfig)
 
@@ -154,8 +152,8 @@ def configure_log():
         "root": {"level": "INFO"},
     }
 
-    cli_path = Path(__file__).parent
-    log_path = cli_path / 'logs' / 'subtree_cli.log'
+    path = Path(__file__).parent
+    log_path = path / 'logs' / 'subtreeutil.log'
 
     if not log_path.parent.exists():
         log_path.parent.mkdir(parents=True)
