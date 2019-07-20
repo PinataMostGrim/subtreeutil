@@ -99,7 +99,7 @@ def get_args(argv):
     """
 
     parser = argparse.ArgumentParser(
-        prog='subtree_cli',
+        prog='subtreeutil',
         description='Application that automates checking out files and folders from a remote git repository.',
     )
 
