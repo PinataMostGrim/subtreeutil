@@ -171,9 +171,8 @@ def fixture_readonly_file():
     delete_test_file()
 
 
-# Tests
-# move folder into location that already exists
-# move readonly folder
+# Required Tests
+# - move readonly folder
 
 def test_move_folder(fixture_folder_for_move):
     """ """
@@ -190,7 +189,7 @@ def test_move_folder(fixture_folder_for_move):
 
 
 def test_move_folder_destination_already_exists(fixture_folder_for_move_destination_exists):
-    """Tests for moving a folder and its into an existing folder."""
+    """Tests for moving a folder and its contents into an existing folder."""
     source = get_test_folder_path()
     destination = get_test_folder_2_path()
     file3 = get_test_file_3_path()
@@ -213,7 +212,7 @@ def test_delete_folder(fixture_folder):
 
 
 def test_delete_folder_with_contents(fixture_folder_with_contents):
-    """"""
+    """Tests for the correct deletion of a folder that has contents."""
     folder = get_test_folder_path()
     command.delete_folder(folder)
     assert folder.exists() is False
@@ -234,7 +233,7 @@ def test_delete_folder_readonly(fixture_folder_readonly):
 
 
 def test_move_file(fixture_file_for_move):
-    """ """
+    """Tests for correctly moving a file."""
     source = get_test_file_path()
     destination = get_test_file_2_path()
 
