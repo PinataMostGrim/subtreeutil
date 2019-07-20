@@ -2,7 +2,7 @@
 Automates checking out files and folders from a remote git repository where a submodule or subtree is not convenient to use.
 
 Performs a checkout operation from a remote repository with the following steps:
-- Adds a remote repository to an existing local one
+- Adds a remote to an existing local repository
 - Checks out a list of files and folders from a branch
 - (Optionally) Moves files and folders to a new location
 - (Optionally) Cleans up (deletes) files or folders
@@ -71,6 +71,7 @@ subtreeutil checkout config\template.json
 ```
 
 ## Notes
-- A local repository must be present in the current working directory.
+- A repository must be present in the current working directory
 - `subtreeutil` uses relative paths. It is best to execute the CLI script from the local repository's root folder.
 - A log file is created at `logs\subtree_cli.log`
+- `subtreeutil` does not remove files that were deleted on the remote repository but are still present on the local one
